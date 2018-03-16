@@ -2,17 +2,22 @@ package Controller;
 
 import GestoresDB.GestorDB;
 import Model.Persona;
+import Model.Usuario;
 import Model.VariablesSistema;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -208,6 +213,24 @@ public class ControllerAdmin implements Initializable {
         update.setOnAction(event -> {
             cargarUsuarios();
         });
+        modificar.setOnAction(event -> {
+            Persona admin = (Persona) tableAdmin.getSelectionModel().getSelectedItem();
+            Persona user = (Persona) tableUser.getSelectionModel().getSelectedItem();
+            if(admin == null && user == null)
+                GestorDB.gestor.invocarAlerta("Seleccione un usuario para modificar", Alert.AlertType.INFORMATION);
+            else if(admin == null){
+                modificarUsuario(user);
+            }
+            else if(user == null){
+                modificarAdmin(admin);
+            }
+            else{
+                modificarUsuario(user);
+                modificarAdmin(admin);
+            }
+            tableUser.getSelectionModel().clearSelection();
+            tableAdmin.getSelectionModel().clearSelection();
+        });
         /****************************/
     }
 
@@ -228,10 +251,42 @@ public class ControllerAdmin implements Initializable {
         ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
         ObservableList<Persona> listaUsuarios = FXCollections.observableArrayList(usuarios);
         tableUser.setItems(listaUsuarios);
-
         ArrayList<Persona> admins = GestorDB.gestor.read_users_admins(true);
         ObservableList<Persona> listaAdmins = FXCollections.observableArrayList(admins);
         tableAdmin.setItems(listaAdmins);
+    }
+
+    public void modificarUsuario(Persona persona){
+        Usuario user = GestorDB.gestor.get_user_info(Integer.parseInt(persona.getId()));
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            Parent root = loader.load(getClass().getResource("../View/modificar_user.fxml").openStream());
+            Stage escenario = new Stage();
+            ControllerModificarUser c = loader.getController();
+            c.modificando = user;
+            c.cargarDatos();
+            escenario.setTitle("Modificando ID: " + persona.getId());
+            escenario.setScene(new Scene(root, 600, 300));
+            escenario.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void modificarAdmin(Persona persona){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            Parent root = loader.load(getClass().getResource("../View/modificar_admin.fxml").openStream());
+            Stage escenario = new Stage();
+            ControllerModificarAdmin c = loader.getController();
+            c.modificando = persona;
+            c.iniciar();
+            escenario.setTitle("Modificando ID: " + persona.getId());
+            escenario.setScene(new Scene(root, 460, 600));
+            escenario.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

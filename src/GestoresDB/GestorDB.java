@@ -1,6 +1,7 @@
 package GestoresDB;
 
 import Model.Persona;
+import Model.Usuario;
 import Model.VariablesSistema;
 import javafx.scene.control.Alert;
 
@@ -183,6 +184,68 @@ public class GestorDB {
             invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
         }
         return null;
+    }
+
+    public Usuario get_user_info(int id){
+        String SQL = "SELECT * FROM get_user_info(?);";
+        try {
+            Usuario user = null;
+            PreparedStatement ps = conecction.prepareStatement(SQL);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                int _id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String cedula = rs.getString("cedula");
+                String alias = rs.getString("alias");
+                String direccion = rs.getString("direccion");
+                String correo = rs.getString("correo");
+                user = new Usuario(_id, nombre, apellido, cedula, alias, correo, direccion);
+            }
+            else{
+                invocarAlerta("Error al recuperar información", Alert.AlertType.ERROR);
+            }
+            return user;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public void update_password(int id, String password, boolean isAdmin){
+        String SQL = "SELECT * FROM update_password(?, ?, ?);";
+        try {
+            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, password);
+            pstmt.setBoolean(3, isAdmin);
+            pstmt.execute();
+            pstmt.close();
+            invocarAlerta("Password para " + String.valueOf(id) + " ha cambiado", Alert.AlertType.INFORMATION);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            invocarAlerta("Error al actualizar", Alert.AlertType.ERROR);
+        }
+    }
+
+    public void update_admin(int id, String nombre, String alias){
+        String SQL = "SELECT * FROM update_admin(?, ?, ?);";
+        try {
+            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, nombre);
+            pstmt.setString(3, alias);
+            pstmt.execute();
+            pstmt.close();
+            invocarAlerta("Datos de: " + String.valueOf(id) + " actualizados", Alert.AlertType.INFORMATION);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            invocarAlerta("Error al actualizar", Alert.AlertType.ERROR);
+        }
     }
 
     public void invocarAlerta(String mensaje, Alert.AlertType tipo) {
