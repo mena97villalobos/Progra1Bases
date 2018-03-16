@@ -47,7 +47,7 @@ public class ControllerLogin implements Initializable {
             Parent root = loader.load(getClass().getResource("../View/"+ type.toString() + ".fxml").openStream());
             Stage escenario = new Stage();
             ControllerAdmin c = loader.getController();
-            c.setIdAdmin(id);
+            c.setAdminLogged(id);
             escenario.setTitle(type.toString().toUpperCase());
             escenario.setScene(new Scene(root, 460, 600));
             escenario.show();

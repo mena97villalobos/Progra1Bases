@@ -1,10 +1,12 @@
 package GestoresDB;
 
+import Model.Persona;
 import Model.VariablesSistema;
 import javafx.scene.control.Alert;
 
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class GestorDB {
     private Connection conexion;
@@ -154,6 +156,31 @@ public class GestorDB {
         catch (SQLException e){
             e.printStackTrace();
             invocarAlerta("Error SQL", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public ArrayList read_users_admins(boolean admin){
+        String SQL;
+        if(admin)
+            SQL = "SELECT * FROM read_admins();";
+        else
+            SQL = "SELECT * FROM read_users();";
+        try {
+            ArrayList<Persona> arrayPersonas = new ArrayList<>();
+            PreparedStatement ps = conecction.prepareStatement(SQL);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String alias = rs.getString("alias");
+                Persona p = new Persona(id, nombre, alias);
+                arrayPersonas.add(p);
+            }
+            return arrayPersonas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
         }
         return null;
     }

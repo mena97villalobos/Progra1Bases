@@ -1,11 +1,14 @@
 package Controller;
 
 import GestoresDB.GestorDB;
+import Model.Persona;
 import Model.VariablesSistema;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -64,12 +67,33 @@ public class ControllerAdmin implements Initializable {
     public ImageView imagenDef;
     @FXML
     public Button load;
+    @FXML
+    public Button modificar;
+    @FXML
+    public Button update;
+    @FXML
+    public TableView tableAdmin;
+    @FXML
+    public TableView tableUser;
+    @FXML
+    public TableColumn idUser;
+    @FXML
+    public TableColumn nombreUser;
+    @FXML
+    public TableColumn aliasUser;
+    @FXML
+    public TableColumn idAdmin;
+    @FXML
+    public TableColumn nombreAdmin;
+    @FXML
+    public TableColumn aliasAdmin;
 
-    private int idAdmin;
+    private int adminLogged;
     private File imagenActual = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        /*Tab Registrar Usuarios*/
         admin.setOnAction(event -> {
             email.setDisable(!email.isDisable());
             celAdd.setDisable(!celAdd.isDisable());
@@ -134,6 +158,8 @@ public class ControllerAdmin implements Initializable {
             apellido.clear();
             celAdd.clear();
         });
+        /****************************/
+        /*Tab Variables del Sistema*/
         loadImage.setOnAction(event -> {
             String path = imagePath.getText();
             if(!path.equals("")){
@@ -175,9 +201,37 @@ public class ControllerAdmin implements Initializable {
                 GestorDB.gestor.invocarAlerta("Error de IO", Alert.AlertType.ERROR);
             }
         });
+        /****************************/
+        /*Tab Modificar Usuarios*/
+        configurarColumnas();
+        cargarUsuarios(); //Llenar las tablas cuando inicia la app
+        update.setOnAction(event -> {
+            cargarUsuarios();
+        });
+        /****************************/
     }
 
-    public void setIdAdmin(int idAdmin) {
-        this.idAdmin = idAdmin;
+    public void setAdminLogged(int adminLogged) {
+        this.adminLogged = adminLogged;
     }
+
+    public void configurarColumnas(){
+        idUser.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
+        nombreUser.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
+        aliasUser.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
+        idAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
+        nombreAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
+        aliasAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
+    }
+
+    public void cargarUsuarios(){
+        ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
+        ObservableList<Persona> listaUsuarios = FXCollections.observableArrayList(usuarios);
+        tableUser.setItems(listaUsuarios);
+
+        ArrayList<Persona> admins = GestorDB.gestor.read_users_admins(true);
+        ObservableList<Persona> listaAdmins = FXCollections.observableArrayList(admins);
+        tableAdmin.setItems(listaAdmins);
+    }
+
 }

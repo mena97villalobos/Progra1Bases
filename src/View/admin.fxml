@@ -44,9 +44,35 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Modificar">
+          <Tab text="Modificar Usuarios">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableUser" layoutX="14.0" layoutY="42.0" prefHeight="200.0" prefWidth="430.0">
+                          <columns>
+                            <TableColumn fx:id="idUser" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="nombreUser" prefWidth="75.0" text="Nombre" />
+                              <TableColumn fx:id="aliasUser" prefWidth="75.0" text="Alias" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <TableView fx:id="tableAdmin" layoutX="14.0" layoutY="281.0" prefHeight="200.0" prefWidth="430.0">
+                          <columns>
+                            <TableColumn fx:id="idAdmin" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="nombreAdmin" prefWidth="75.0" text="Nombre" />
+                              <TableColumn fx:id="aliasAdmin" prefWidth="75.0" text="Alias" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Label layoutX="14.0" layoutY="14.0" text="Usuarios" />
+                        <Label layoutX="18.0" layoutY="255.0" text="Administradores" />
+                        <Button fx:id="modificar" layoutX="361.0" layoutY="501.0" mnemonicParsing="false" text="Modificar" />
+                        <Button fx:id="update" layoutX="268.0" layoutY="501.0" mnemonicParsing="false" text="Actualizar" />
+                     </children></AnchorPane>
             </content>
           </Tab>
             <Tab text="Variables del Sistema">
