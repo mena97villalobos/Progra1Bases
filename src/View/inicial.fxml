@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="215.0" prefWidth="287.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerInicial">
+   <children>
+      <RadioButton fx:id="oracle" layoutX="108.0" layoutY="72.0" mnemonicParsing="false" text="Oracle" />
+      <RadioButton fx:id="postgres" layoutX="102.0" layoutY="127.0" mnemonicParsing="false" text="Postgres" />
+      <Label layoutX="56.0" layoutY="24.0" text="Seleccione el motor de DB" />
+      <Button fx:id="entrar" layoutX="114.0" layoutY="170.0" mnemonicParsing="false" text="Entrar" />
+   </children>
+</AnchorPane>

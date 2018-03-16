@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="460.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerAdmin">
+   <children>
+      <TabPane prefHeight="600.0" prefWidth="460.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Registrar">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="559.0" prefWidth="460.0">
+                     <children>
+                        <Label layoutX="17.0" layoutY="34.0" text="User Name" />
+                        <TextField fx:id="user" layoutX="157.0" layoutY="34.0" />
+                        <Label layoutX="17.0" layoutY="74.0" text="Password" />
+                        <PasswordField fx:id="password" layoutX="157.0" layoutY="74.0" />
+                        <Label layoutX="14.0" layoutY="114.0" text="Confirmar Password" />
+                        <Label layoutX="14.0" layoutY="154.0" text="Nombre" />
+                        <PasswordField fx:id="password1" layoutX="157.0" layoutY="114.0" />
+                        <TextField fx:id="name" layoutX="157.0" layoutY="154.0" />
+                        <Button fx:id="registrar" layoutX="368.0" layoutY="493.0" mnemonicParsing="false" text="Registrar" />
+                        <CheckBox fx:id="admin" layoutX="17.0" layoutY="8.0" mnemonicParsing="false" text="Crear Como Administrador" />
+                        <Label layoutX="14.0" layoutY="237.0" text="Correo" />
+                        <TextField fx:id="email" layoutX="157.0" layoutY="237.0" />
+                        <Label layoutX="14.0" layoutY="277.0" text="Dirección" />
+                        <TextArea fx:id="addr" layoutX="157.0" layoutY="277.0" prefHeight="125.0" prefWidth="187.0" />
+                        <Label layoutX="14.0" layoutY="413.0" text="Teléfono" />
+                        <TextField fx:id="celAdd" layoutX="157.0" layoutY="413.0" />
+                        <Button fx:id="addCel" layoutX="80.0" layoutY="413.0" mnemonicParsing="false" text="Añadir" />
+                        <Rectangle fx:id="rectang" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="411.0" layoutX="364.0" layoutY="34.0" stroke="BLACK" strokeType="INSIDE" width="86.0" />
+                        <Label layoutX="14.0" layoutY="493.0" text="Cédula" />
+                        <TextField fx:id="ced" layoutX="157.0" layoutY="493.0" />
+                        <Label layoutX="14.0" layoutY="194.0" text="Apellidos" />
+                        <TextField fx:id="apellido" layoutX="157.0" layoutY="194.0" />
+                         <ComboBox fx:id="celRegister" layoutX="157.0" layoutY="453.0" prefHeight="31.0" prefWidth="188.0" promptText="Teléfonos" />
+                        <Button fx:id="reset" layoutX="381.0" layoutY="453.0" mnemonicParsing="false" text="Clear" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Modificar">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab text="Variables del Sistema">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab text="Listas">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
