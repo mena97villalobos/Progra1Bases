@@ -1,6 +1,7 @@
 package Controller;
 
 import GestoresDB.GestorDB;
+import Model.VariablesSistema;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -9,7 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.apache.commons.io.IOUtils;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -57,7 +62,11 @@ public class ControllerAdmin implements Initializable {
     public TextField imagePath;
     @FXML
     public ImageView imagenDef;
+    @FXML
+    public Button load;
+
     private int idAdmin;
+    private File imagenActual = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -131,9 +140,40 @@ public class ControllerAdmin implements Initializable {
                 File file = new File(path);
                 Image image = new Image(file.toURI().toString());
                 imagenDef.setImage(image);
+                imagenActual = file;
             }
             else
                 GestorDB.gestor.invocarAlerta("Path invalido", Alert.AlertType.ERROR);
+        });
+        save.setOnAction(event -> {
+            if(imagenActual == null)
+                GestorDB.gestor.invocarAlerta("Imagen no seleccionada", Alert.AlertType.ERROR);
+            else {
+                Float incremento = Float.parseFloat(inc.getText());
+                Float porcentaje = Float.parseFloat(percent.getText());
+                GestorDB.gestor.update_variables(incremento, porcentaje, imagenActual);
+            }
+
+        });
+        load.setOnAction(event -> {
+            VariablesSistema vs = GestorDB.gestor.read_variables();
+            inc.setText(Float.toString(vs.inc));
+            percent.setText(Float.toString(vs.percent));
+            try {
+                File tempFile = File.createTempFile("img_def", ".png");
+                tempFile.deleteOnExit();
+                FileOutputStream out = new FileOutputStream(tempFile);
+                IOUtils.copy(vs.imagen, out);
+                Image image = new Image(tempFile.toURI().toString());
+                imagenDef.setImage(image);
+                imagenActual = tempFile;
+            }
+            catch (FileNotFoundException e){
+                GestorDB.gestor.invocarAlerta("Error de archivo", Alert.AlertType.ERROR);
+            }
+            catch (IOException e){
+                GestorDB.gestor.invocarAlerta("Error de IO", Alert.AlertType.ERROR);
+            }
         });
     }
 

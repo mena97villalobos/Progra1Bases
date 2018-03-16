@@ -1,7 +1,7 @@
 package Controller;
 
 import GestoresDB.GestorDB;
-import Util.USER_TYPES;
+import Model.USER_TYPES;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;

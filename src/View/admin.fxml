@@ -62,6 +62,7 @@
                         <Button fx:id="save" layoutX="366.0" layoutY="516.0" mnemonicParsing="false" text="Guardar" />
                         <TextField fx:id="imagePath" layoutX="205.0" layoutY="95.0" promptText="File Path" />
                         <Button fx:id="loadImage" layoutX="407.0" layoutY="95.0" mnemonicParsing="false" text="Ok" />
+                        <Button fx:id="load" layoutX="286.0" layoutY="516.0" mnemonicParsing="false" text="Cargar" />
                      </children></AnchorPane>
               </content>
             </Tab>
