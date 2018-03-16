@@ -32,7 +32,7 @@ public class ControllerLogin implements Initializable {
             boolean a = admin.isSelected();
             int userID = GestorDB.gestor.validate_user(u, p, a);
             if (userID != 0){
-                abrir_ventana_user(a ? USER_TYPES.admin : USER_TYPES.user);
+                abrir_ventana_user(a ? USER_TYPES.admin : USER_TYPES.user, userID);
             }
             else{
                 GestorDB.gestor.invocarAlerta("Usuario o Contraseña Incorrectos", Alert.AlertType.WARNING);
@@ -41,11 +41,13 @@ public class ControllerLogin implements Initializable {
         });
     }
 
-    private void abrir_ventana_user(USER_TYPES type){
+    private void abrir_ventana_user(USER_TYPES type, int id){
         try {
             FXMLLoader loader = new FXMLLoader();
             Parent root = loader.load(getClass().getResource("../View/"+ type.toString() + ".fxml").openStream());
             Stage escenario = new Stage();
+            ControllerAdmin c = loader.getController();
+            c.setIdAdmin(id);
             escenario.setTitle(type.toString().toUpperCase());
             escenario.setScene(new Scene(root, 460, 600));
             escenario.show();

@@ -5,9 +5,11 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -43,7 +45,19 @@ public class ControllerAdmin implements Initializable {
     public ComboBox<String> celRegister;
     @FXML
     public Rectangle rectang;
-
+    @FXML
+    public Button save;
+    @FXML
+    public Button loadImage;
+    @FXML
+    public TextField inc;
+    @FXML
+    public TextField percent;
+    @FXML
+    public TextField imagePath;
+    @FXML
+    public ImageView imagenDef;
+    private int idAdmin;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -111,5 +125,19 @@ public class ControllerAdmin implements Initializable {
             apellido.clear();
             celAdd.clear();
         });
+        loadImage.setOnAction(event -> {
+            String path = imagePath.getText();
+            if(!path.equals("")){
+                File file = new File(path);
+                Image image = new Image(file.toURI().toString());
+                imagenDef.setImage(image);
+            }
+            else
+                GestorDB.gestor.invocarAlerta("Path invalido", Alert.AlertType.ERROR);
+        });
+    }
+
+    public void setIdAdmin(int idAdmin) {
+        this.idAdmin = idAdmin;
     }
 }
