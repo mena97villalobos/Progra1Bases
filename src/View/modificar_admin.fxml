@@ -6,10 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="161.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerModificarAdmin">
+<AnchorPane prefHeight="160.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerModificarAdmin">
    <children>
-      <TitledPane animated="false" layoutX="300.0" layoutY="14.0" prefHeight="133.0" prefWidth="288.0" text="Contraseña">
+      <TitledPane animated="false" collapsible="false" layoutX="300.0" layoutY="14.0" prefHeight="133.0" prefWidth="288.0" text="Contraseña">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="193.0" prefWidth="286.0">
                <children>

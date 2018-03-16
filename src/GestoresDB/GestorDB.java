@@ -248,6 +248,43 @@ public class GestorDB {
         }
     }
 
+    public ArrayList read_categoria_primaria(){
+        String SQL = "SELECT * FROM read_categoria_primaria()";
+        try {
+            ArrayList<String> arrayPersonas = new ArrayList<>();
+            PreparedStatement ps = conecction.prepareStatement(SQL);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String nombre = rs.getString("categoria_primaria");
+                arrayPersonas.add(nombre);
+            }
+            return arrayPersonas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public ArrayList read_categoria_secundaria(String primaria){
+        String SQL = "SELECT * FROM read_categoria_secundaria(?)";
+        try {
+            ArrayList<String> arrayPersonas = new ArrayList<>();
+            PreparedStatement ps = conecction.prepareStatement(SQL);
+            ps.setString(1, primaria);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String nombre = rs.getString("categoria_secundaria");
+                arrayPersonas.add(nombre);
+            }
+            return arrayPersonas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
     public void invocarAlerta(String mensaje, Alert.AlertType tipo) {
         Alert nuevaAlerta = new Alert(tipo);
         nuevaAlerta.setTitle("");

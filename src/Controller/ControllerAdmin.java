@@ -2,10 +2,12 @@ package Controller;
 
 import GestoresDB.GestorDB;
 import Model.Persona;
+import Model.Subastas;
 import Model.Usuario;
 import Model.VariablesSistema;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -92,6 +94,34 @@ public class ControllerAdmin implements Initializable {
     public TableColumn nombreAdmin;
     @FXML
     public TableColumn aliasAdmin;
+    @FXML
+    public TableView listaSubastas;
+    @FXML
+    public TableView listaUsuarios;
+    @FXML
+    public TableColumn idSubasta;
+    @FXML
+    public TableColumn vendedor;
+    @FXML
+    public TableColumn fechaFin;
+    @FXML
+    public TableColumn idUserLista;
+    @FXML
+    public TableColumn aliasLista;
+    @FXML
+    public TableColumn nombreLista;
+    @FXML
+    public ComboBox catPrimaria;
+    @FXML
+    public ComboBox catSecundaria;
+    @FXML
+    public Button filtrar;
+    @FXML
+    public Button mostrarPujas;
+    @FXML
+    public Button histSubastas;
+    @FXML
+    public Button histGanadas;
 
     private int adminLogged;
     private File imagenActual = null;
@@ -206,6 +236,7 @@ public class ControllerAdmin implements Initializable {
                 GestorDB.gestor.invocarAlerta("Error de IO", Alert.AlertType.ERROR);
             }
         });
+        load.fire();
         /****************************/
         /*Tab Modificar Usuarios*/
         configurarColumnas();
@@ -232,6 +263,28 @@ public class ControllerAdmin implements Initializable {
             tableAdmin.getSelectionModel().clearSelection();
         });
         /****************************/
+        /*Tab listas*/
+        catPrimaria.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
+        //Thread para dejar bloqueado categoria secundaria y el boton de filtrar
+        Task task = new Task() {
+            @Override
+            protected Void call() {
+                while(catPrimaria.getSelectionModel().isEmpty()){}
+                catSecundaria.setDisable(false);
+                filtrar.setDisable(false);
+                String primariaSeleccionada = (String) catPrimaria.getSelectionModel().getSelectedItem();
+                ArrayList<String> secundarias = GestorDB.gestor.read_categoria_secundaria(primariaSeleccionada);
+                catSecundaria.setItems(FXCollections.observableArrayList(secundarias));
+                return null;
+            }
+        };
+        Thread t = new Thread(task);
+        t.start();
+        filtrar.setOnAction(event -> {
+            String secundariaSeleccionada = (String) catSecundaria.getSelectionModel().getSelectedItem();
+
+        });
+        /****************************/
     }
 
     public void setAdminLogged(int adminLogged) {
@@ -245,15 +298,22 @@ public class ControllerAdmin implements Initializable {
         idAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
         nombreAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
         aliasAdmin.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
+        idUserLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
+        nombreLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
+        aliasLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
+        idSubasta.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
+        vendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
+        fechaFin.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
     }
 
     public void cargarUsuarios(){
         ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
-        ObservableList<Persona> listaUsuarios = FXCollections.observableArrayList(usuarios);
-        tableUser.setItems(listaUsuarios);
+        ObservableList<Persona> listaUsers = FXCollections.observableArrayList(usuarios);
+        tableUser.setItems(listaUsers);
         ArrayList<Persona> admins = GestorDB.gestor.read_users_admins(true);
         ObservableList<Persona> listaAdmins = FXCollections.observableArrayList(admins);
         tableAdmin.setItems(listaAdmins);
+        listaUsuarios.setItems(listaUsers);
     }
 
     public void modificarUsuario(Persona persona){
@@ -282,7 +342,7 @@ public class ControllerAdmin implements Initializable {
             c.modificando = persona;
             c.iniciar();
             escenario.setTitle("Modificando ID: " + persona.getId());
-            escenario.setScene(new Scene(root, 460, 600));
+            escenario.setScene(new Scene(root, 600, 160));
             escenario.show();
         } catch (IOException e) {
             e.printStackTrace();

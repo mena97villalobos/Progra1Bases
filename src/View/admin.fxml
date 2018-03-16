@@ -94,7 +94,48 @@
             </Tab>
             <Tab text="Listas">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" prefHeight="240.0" prefWidth="430.0" text="Subastas">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TableView fx:id="listaSubastas" prefHeight="200.0" prefWidth="240.0">
+                                      <columns>
+                                        <TableColumn fx:id="idSubasta" prefWidth="75.0" text="ID" />
+                                        <TableColumn fx:id="vendedor" prefWidth="83.0" text="Vendedor" />
+                                          <TableColumn fx:id="fechaFin" prefWidth="81.0" text="Fecha Fin" />
+                                      </columns>
+                                    </TableView>
+                                     <ComboBox fx:id="catPrimaria" layoutX="249.0" layoutY="14.0" prefHeight="31.0" prefWidth="175.0" promptText="Categ. Primaria" />
+                                     <ComboBox fx:id="catSecundaria" disable="true" layoutX="249.0" layoutY="56.0" prefHeight="31.0" prefWidth="175.0" promptText="Categ. Secundaria" />
+                                    <Button fx:id="filtrar" disable="true" layoutX="249.0" layoutY="100.0" mnemonicParsing="false" text="Filtrar por Categoría" />
+                                    <Button fx:id="mostrarPujas" layoutX="249.0" layoutY="146.0" mnemonicParsing="false" text="Mostrar Pujas" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </TitledPane>
+                        <TitledPane animated="false" collapsible="false" layoutX="15.0" layoutY="261.0" prefHeight="286.0" prefWidth="431.0" text="Usuarios">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TableView fx:id="listaUsuarios" prefHeight="250.0" prefWidth="240.0">
+                                      <columns>
+                                        <TableColumn fx:id="idUserLista" prefWidth="75.0" text="ID" />
+                                        <TableColumn fx:id="aliasLista" prefWidth="75.0" text="Alias" />
+                                          <TableColumn fx:id="nombreLista" prefWidth="75.0" text="Nombre" />
+                                      </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                    <Button fx:id="histSubastas" layoutX="254.0" layoutY="14.0" mnemonicParsing="false" text="Historial Subastas" />
+                                    <Button fx:id="histGanadas" layoutX="254.0" layoutY="57.0" mnemonicParsing="false" text="Historial Ganadas" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </TitledPane>
+                     </children></AnchorPane>
               </content>
             </Tab>
         </tabs>
