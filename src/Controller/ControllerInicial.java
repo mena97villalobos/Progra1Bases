@@ -40,8 +40,7 @@ public class ControllerInicial implements Initializable {
 
             }
             if (postgres.selectedProperty().getValue()){
-                //TODO El usuario y la contraseña hay que cambiarlos
-                GestorDB.gestor = new GestorDB("jdbc:postgresql://localhost:5432/Progra1", "postgres", "9545");
+                GestorDB.gestor = new GestorDB("jdbc:postgresql://localhost:5432/Progra1", "iniciar_sesion", "9545");
             }
             abrir_login();
         });

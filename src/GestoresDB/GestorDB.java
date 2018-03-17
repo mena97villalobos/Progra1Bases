@@ -1,8 +1,6 @@
 package GestoresDB;
 
-import Model.Persona;
-import Model.Usuario;
-import Model.VariablesSistema;
+import Model.*;
 import javafx.scene.control.Alert;
 
 import java.io.*;
@@ -10,21 +8,16 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class GestorDB {
-    private Connection conexion;
-    private Statement estado;
     private final String url;
-    private final String user;
-    private final String password;
-    private Connection conecction;
+    private String user;
+    private String password;
+    private Connection connection;
     public static GestorDB gestor;
 
     public GestorDB(String connectionString, String user, String password) {
-        conexion = null;
-        estado = null;
         this.url = connectionString;
         this.user = user;
         this.password = password;
-        conecction = connect();
     }
 
     public Connection connect() {
@@ -40,12 +33,13 @@ public class GestorDB {
 
     public int validate_user(String user, String password, boolean admin){
         String SQL;
+        connection = connect();
         if(admin)
             SQL = "SELECT * FROM validar_admin (?, ?)";
         else
             SQL = "SELECT * FROM validar_login (?, ?)";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setString(1, user);
             pstmt.setString(2, password);
             ResultSet rs = pstmt.executeQuery();
@@ -53,6 +47,15 @@ public class GestorDB {
             if(rs.next())
                  idUser = rs.getInt("validar_admin");
             pstmt.close();
+            connection.close();
+            if(admin){
+                this.user = "admin";
+                connection = connect();
+            }
+            else{
+                this.user = "usuario";
+                connection = connect();
+            }
             return idUser;
         } catch (SQLException e) {
             invocarAlerta("Error al iniciar sesión", Alert.AlertType.ERROR);
@@ -64,7 +67,7 @@ public class GestorDB {
     public void crear_admin(String nombre, String alias, String password){
         String SQL = "SELECT * FROM crear_admin(?, ?, ?);";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setString(1, nombre);
             pstmt.setString(2, alias);
             pstmt.setString(3, password);
@@ -80,7 +83,7 @@ public class GestorDB {
             (String cedula, String nombre, String apellido, String alias, String password, String direccion, String correo){
         String SQL = "SELECT * FROM create_user(?, ?, ?, ?, ?, ?, ?);";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setString(1, cedula);
             pstmt.setString(2, nombre);
             pstmt.setString(3, apellido);
@@ -89,7 +92,6 @@ public class GestorDB {
             pstmt.setString(6, direccion);
             pstmt.setString(7, correo);
             ResultSet rs = pstmt.executeQuery();
-            pstmt.close();
             if(rs.next())
                 return rs.getInt("create_user");
         } catch (SQLException e) {
@@ -101,7 +103,7 @@ public class GestorDB {
     public void crear_telefono(int idUsuario, String tel){
         String SQL = "SELECT * FROM crear_telefono(?, ?);";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, idUsuario);
             pstmt.setString(2, tel);
             pstmt.execute();
@@ -115,7 +117,7 @@ public class GestorDB {
         String SQL = "SELECT * FROM update_variables(?, ?, ?);";
         try {
             FileInputStream fis = new FileInputStream(image);
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setFloat(1, incremento);
             pstmt.setFloat(2, porcentaje);
             pstmt.setBinaryStream(3, fis, image.length());
@@ -139,7 +141,7 @@ public class GestorDB {
     public VariablesSistema read_variables(){
         String SQL = "SELECT * FROM read_variables();";
         try {
-            PreparedStatement ps = conecction.prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
 
             ResultSet rs = ps.executeQuery();
             VariablesSistema vs = null;
@@ -169,7 +171,7 @@ public class GestorDB {
             SQL = "SELECT * FROM read_users();";
         try {
             ArrayList<Persona> arrayPersonas = new ArrayList<>();
-            PreparedStatement ps = conecction.prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");
@@ -190,7 +192,7 @@ public class GestorDB {
         String SQL = "SELECT * FROM get_user_info(?);";
         try {
             Usuario user = null;
-            PreparedStatement ps = conecction.prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
@@ -217,7 +219,7 @@ public class GestorDB {
     public void update_password(int id, String password, boolean isAdmin){
         String SQL = "SELECT * FROM update_password(?, ?, ?);";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
             pstmt.setString(2, password);
             pstmt.setBoolean(3, isAdmin);
@@ -234,7 +236,7 @@ public class GestorDB {
     public void update_admin(int id, String nombre, String alias){
         String SQL = "SELECT * FROM update_admin(?, ?, ?);";
         try {
-            PreparedStatement pstmt = conecction.prepareStatement(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
             pstmt.setString(2, nombre);
             pstmt.setString(3, alias);
@@ -252,7 +254,7 @@ public class GestorDB {
         String SQL = "SELECT * FROM read_categoria_primaria()";
         try {
             ArrayList<String> arrayPersonas = new ArrayList<>();
-            PreparedStatement ps = conecction.prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 String nombre = rs.getString("categoria_primaria");
@@ -270,7 +272,7 @@ public class GestorDB {
         String SQL = "SELECT * FROM read_categoria_secundaria(?)";
         try {
             ArrayList<String> arrayPersonas = new ArrayList<>();
-            PreparedStatement ps = conecction.prepareStatement(SQL);
+            PreparedStatement ps = connection.prepareStatement(SQL);
             ps.setString(1, primaria);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -278,6 +280,79 @@ public class GestorDB {
                 arrayPersonas.add(nombre);
             }
             return arrayPersonas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public ArrayList read_subastas(String primaria, String secundaria, boolean filtro){
+        String SQL = "SELECT * FROM read_subastas(?, ?, ?);";
+        try {
+            ArrayList<Subastas> subastas = new ArrayList<>();
+            Subastas subasta;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setString(1, primaria);
+            ps.setString(2, secundaria);
+            ps.setBoolean(3, filtro);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String id = String.valueOf(rs.getInt("id"));
+                String vendedor = rs.getString("nombreVendedor");
+                String fechaFin = rs.getString("fechaFin");
+                subasta = new Subastas(id, vendedor, fechaFin, "");
+                subastas.add(subasta);
+            }
+            return subastas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public ArrayList hist_subastas(String idUser){
+        String SQL = "SELECT * FROM historia_subastas(?);";
+        try {
+            ArrayList<Subastas> subastas = new ArrayList<>();
+            Subastas subasta;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setInt(1, Integer.valueOf(idUser));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String id = String.valueOf(rs.getInt("id"));
+                String vendedor = rs.getString("nombreVendedor");
+                String fechaFin = rs.getString("fechaFin");
+                String inicial = String.valueOf(rs.getFloat("inicial"));
+                subasta = new Subastas(id, vendedor, fechaFin, inicial);
+                subastas.add(subasta);
+            }
+            return subastas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public ArrayList hist_pujas(String idSubasta){
+        String SQL = "SELECT * FROM historial_pujas(?);";
+        try {
+            ArrayList<Pujas> pujas = new ArrayList<>();
+            Pujas puja;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setInt(1, Integer.parseInt(idSubasta));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String id = String.valueOf(rs.getInt("id"));
+                String comprador = rs.getString("comprador");
+                String fechaFin = rs.getString("fecha");
+                String monto = String.valueOf(rs.getFloat("monto"));
+                puja = new Pujas(id, comprador, monto, fechaFin);
+                pujas.add(puja);
+            }
+            return pujas;
         } catch (SQLException e) {
             e.printStackTrace();
             invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);

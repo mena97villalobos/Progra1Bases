@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerSubastas">
+   <children>
+      <TableView fx:id="tablaSubastas" prefHeight="400.0" prefWidth="951.0">
+        <columns>
+          <TableColumn fx:id="id" prefWidth="75.0" text="ID" />
+          <TableColumn fx:id="vendedor" prefWidth="100.0" text="Vendedor" />
+            <TableColumn fx:id="fechaFin" prefWidth="145.0" text="Fecha Fin" />
+            <TableColumn fx:id="inicial" prefWidth="120.0" text="Precio Inicial" />
+            <TableColumn fx:id="montoFinal" prefWidth="120.0" text="Precio Final" />
+            <TableColumn fx:id="comentarioVendedor" prefWidth="195.0" text="Comentario Vendedor" />
+            <TableColumn fx:id="comentarioComprador" minWidth="0.0" prefWidth="195.0" text="Comentario Comprador" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
