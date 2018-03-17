@@ -13,8 +13,8 @@
           <TableColumn fx:id="id" prefWidth="75.0" text="ID" />
           <TableColumn fx:id="vendedor" prefWidth="100.0" text="Vendedor" />
             <TableColumn fx:id="fechaFin" prefWidth="145.0" text="Fecha Fin" />
-            <TableColumn fx:id="inicial" prefWidth="120.0" text="Precio Inicial" />
-            <TableColumn fx:id="montoFinal" prefWidth="120.0" text="Precio Final" />
+            <TableColumn fx:id="precioInicial" prefWidth="120.0" text="Precio Inicial" />
+            <TableColumn fx:id="precioFinal" prefWidth="120.0" text="Precio Final" />
             <TableColumn fx:id="comentarioVendedor" prefWidth="195.0" text="Comentario Vendedor" />
             <TableColumn fx:id="comentarioComprador" minWidth="0.0" prefWidth="195.0" text="Comentario Comprador" />
         </columns>

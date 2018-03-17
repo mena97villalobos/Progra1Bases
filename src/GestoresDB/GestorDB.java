@@ -312,8 +312,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList hist_subastas(String idUser){
-        String SQL = "SELECT * FROM historia_subastas(?);";
+    public ArrayList hist_subastas(String idUser, String SQL){
         try {
             ArrayList<Subastas> subastas = new ArrayList<>();
             Subastas subasta;
@@ -321,11 +320,14 @@ public class GestorDB {
             ps.setInt(1, Integer.valueOf(idUser));
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                String id = String.valueOf(rs.getInt("id"));
-                String vendedor = rs.getString("nombreVendedor");
-                String fechaFin = rs.getString("fechaFin");
+                String id = String.valueOf(rs.getInt("idSubasta"));
+                String vendedor = rs.getString("alias");
+                String fechaFin = rs.getString("fecha_Fin");
                 String inicial = String.valueOf(rs.getFloat("inicial"));
-                subasta = new Subastas(id, vendedor, fechaFin, inicial);
+                String actual = String.valueOf(rs.getFloat("actual"));
+                String commentarioV = rs.getString("comentarioVendedor");
+                String comentarioC = rs.getString("comentarioComprador");
+                subasta = new Subastas(id, vendedor, fechaFin, inicial, actual, commentarioV, comentarioC);
                 subastas.add(subasta);
             }
             return subastas;

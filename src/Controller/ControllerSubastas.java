@@ -25,7 +25,13 @@ public class ControllerSubastas implements Initializable {
     @FXML
     public TableColumn fechaFin;
     @FXML
-    public TableColumn inicial;
+    public TableColumn precioInicial;
+    @FXML
+    public TableColumn precioFinal;
+    @FXML
+    public TableColumn comentarioVendedor;
+    @FXML
+    public TableColumn comentarioComprador;
 
     public Persona revisando;
 
@@ -38,11 +44,14 @@ public class ControllerSubastas implements Initializable {
         id.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
         vendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
         fechaFin.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
-        inicial.setCellValueFactory(new PropertyValueFactory<Subastas, String>("monto"));
+        precioInicial.setCellValueFactory(new PropertyValueFactory<Subastas, String>("monto"));
+        precioFinal.setCellValueFactory(new PropertyValueFactory<Subastas, String>("montoFinal"));
+        comentarioVendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("comentarioVendedor"));
+        comentarioComprador.setCellValueFactory(new PropertyValueFactory<Subastas, String>("comentarioComprador"));
     }
 
-    public void iniciar(){
-        ArrayList<Subastas> s = GestorDB.gestor.hist_subastas(revisando.getId());
+    public void iniciar(String SQL){
+        ArrayList<Subastas> s = GestorDB.gestor.hist_subastas(revisando.getId(), SQL);
         tablaSubastas.setItems(FXCollections.observableArrayList(s));
     }
 }

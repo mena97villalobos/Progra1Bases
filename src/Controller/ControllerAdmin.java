@@ -314,8 +314,29 @@ public class ControllerAdmin implements Initializable {
                     ControllerSubastas c = loader.getController();
                     c.revisando = usuario;
                     c.configurarColumnas();
-                    c.iniciar();
-                    escenario.setTitle("Subastas para ID: " + usuario.getId());
+                    c.iniciar("SELECT * FROM hist_subastas_usuario(?);");
+                    escenario.setTitle("Subastas Creadas para ID: " + usuario.getId());
+                    escenario.setScene(new Scene(root, 950, 400));
+                    escenario.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        histGanadas.setOnAction(event -> {
+            Persona usuario = (Persona) listaUsuarios.getSelectionModel().getSelectedItem();
+            if(usuario == null)
+                GestorDB.gestor.invocarAlerta("Seleccione un usuario", Alert.AlertType.INFORMATION);
+            else {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    Parent root = loader.load(getClass().getResource("../View/subastas.fxml").openStream());
+                    Stage escenario = new Stage();
+                    ControllerSubastas c = loader.getController();
+                    c.revisando = usuario;
+                    c.configurarColumnas();
+                    c.iniciar("SELECT * FROM hist_subastas_ganadas(?);");
+                    escenario.setTitle("Subastas Ganadas para ID: " + usuario.getId());
                     escenario.setScene(new Scene(root, 950, 400));
                     escenario.show();
                 } catch (IOException e) {
