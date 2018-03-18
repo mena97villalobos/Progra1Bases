@@ -1,26 +1,24 @@
 package Controller;
 
 import GestoresDB.GestorDB;
-import Model.Item;
-import Model.VariablesSistema;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class ControllerUser implements Initializable {
@@ -87,12 +85,30 @@ public class ControllerUser implements Initializable {
             int categoria = GestorDB.gestor.get_id_categoria(primaria, secundaria);
             if(categoria == 0)
                 GestorDB.gestor.invocarAlerta("Error al seleccionar Categoria", Alert.AlertType.ERROR);
-            String desc = descripcion.getText();
-            if(imagenSeleccionada == null)
-                selectDefault.fire();
-            Item nuevo = new Item(categoria, desc, imagenSeleccionada);
-            //TODO insertar item y sacar el id que se le asignó
-
+            else {
+                String desc = descripcion.getText();
+                if (imagenSeleccionada == null)
+                    selectDefault.fire();
+                int idItem = GestorDB.gestor.crear_item(categoria, desc, imagenSeleccionada);
+                if(idItem != 0) {
+                    //cargar datos subasta
+                    String fechaFin = fechaCierre.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    String horaFin = horaCierre.getText();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                    Date parsedDate = null;
+                    try {
+                        parsedDate = dateFormat.parse(fechaFin + " " + horaFin);
+                    } catch (ParseException e) {
+                        GestorDB.gestor.invocarAlerta("Asegurese que el formato de la hora sea correcto", Alert.AlertType.ERROR);
+                    }
+                    if (parsedDate != null) {
+                        Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+                        float precioInit = Float.parseFloat(precio.getText());
+                        String detallesEnt = detallesEntrega.getText();
+                        GestorDB.gestor.crear_subasta(this.userID, idItem, precioInit, timestamp, detallesEnt);
+                    }
+                }
+            }
         });
         /*******************************************/
     }

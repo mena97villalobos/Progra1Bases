@@ -19,8 +19,9 @@ public class GestorDB {
 
     public GestorDB(String connectionString, String user, String password) {
         this.url = connectionString;
-        this.user = user;
-        this.password = password;
+        //TODO Cambiar usuarios
+        this.user = "postgres";
+        this.password = "9545";
     }
 
     public Connection connect() {
@@ -52,11 +53,11 @@ public class GestorDB {
             pstmt.close();
             connection.close();
             if(admin){
-                this.user = "admin";
+                this.user = "postgres";
                 connection = connect();
             }
             else{
-                this.user = "usuario";
+                this.user = "postgres";
                 connection = connect();
             }
             return idUser;
@@ -379,6 +380,52 @@ public class GestorDB {
             pstmt.setString(1, primaria);
             pstmt.setString(2, secundaria);
             ResultSet rs = pstmt.executeQuery();
+            if(rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int crear_item(int idCategoria, String desc, File imagen){
+        String SQL = "SELECT * FROM crear_item(?, ?, ?);";
+        try {
+            FileInputStream fis = new FileInputStream(imagen);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, desc);
+            pstmt.setInt(2, idCategoria);
+            pstmt.setBinaryStream(3, fis, imagen.length());
+            ResultSet rs = pstmt.executeQuery();
+            fis.close();
+            invocarAlerta("Item insertado", Alert.AlertType.INFORMATION);
+            if(rs.next())
+                return rs.getInt(1);
+        }
+        catch(FileNotFoundException e){
+            invocarAlerta("Archivo no encontrado", Alert.AlertType.ERROR);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            invocarAlerta("Error al actualizar", Alert.AlertType.ERROR);
+        }
+        catch (IOException e){
+            invocarAlerta("Error de Archivo", Alert.AlertType.ERROR);
+        }
+        return 0;
+    }
+
+    public int crear_subasta(int idVendedor, int idItem, float precio, Timestamp ts, String dEntrega){
+        String SQL = "SELECT * FROM crear_subasta(?, ?, ?, ?, ?);";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, idVendedor);
+            pstmt.setInt(2, idItem);
+            pstmt.setFloat(3, precio);
+            pstmt.setTimestamp(4, ts);
+            pstmt.setString(5, dEntrega);
+            ResultSet rs = pstmt.executeQuery();
+            invocarAlerta("Subasta Creada", Alert.AlertType.INFORMATION);
             if(rs.next())
                 return rs.getInt(1);
         } catch (SQLException e) {
