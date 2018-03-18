@@ -25,6 +25,11 @@ public class GestorDB {
     }
 
     public Connection connect() {
+        try{
+            gestor.connection.close();
+        } catch (SQLException e) {
+            System.out.println("Conexión no existe");
+        }
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
