@@ -2,6 +2,9 @@ package GestoresDB;
 
 import Model.*;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.sql.*;
@@ -45,7 +48,7 @@ public class GestorDB {
             ResultSet rs = pstmt.executeQuery();
             int idUser = 0;
             if(rs.next())
-                 idUser = rs.getInt("validar_admin");
+                 idUser = rs.getInt(1);
             pstmt.close();
             connection.close();
             if(admin){
@@ -369,4 +372,38 @@ public class GestorDB {
         nuevaAlerta.showAndWait();
     }
 
+    public int get_id_categoria(String primaria, String secundaria){
+        String SQL = "SELECT * FROM get_id_categoria(?, ?);";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, primaria);
+            pstmt.setString(2, secundaria);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public File cargarImagen(ImageView imagen){
+        VariablesSistema vs = gestor.read_variables();
+        try {
+            File tempFile = File.createTempFile("img_def", ".png");
+            tempFile.deleteOnExit();
+            FileOutputStream out = new FileOutputStream(tempFile);
+            IOUtils.copy(vs.imagen, out);
+            Image image = new Image(tempFile.toURI().toString());
+            imagen.setImage(image);
+            return tempFile;
+        }
+        catch (FileNotFoundException e){
+            GestorDB.gestor.invocarAlerta("Error de archivo", Alert.AlertType.ERROR);
+        }
+        catch (IOException e){
+            GestorDB.gestor.invocarAlerta("Error de IO", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
 }

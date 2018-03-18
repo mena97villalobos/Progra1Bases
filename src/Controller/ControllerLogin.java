@@ -44,12 +44,20 @@ public class ControllerLogin implements Initializable {
     private void abrir_ventana_user(USER_TYPES type, int id){
         try {
             FXMLLoader loader = new FXMLLoader();
-            Parent root = loader.load(getClass().getResource("../View/"+ type.toString() + ".fxml").openStream());
+            Parent root = loader.load(getClass().getResource("../View/"+ type.toString() +".fxml").openStream());
             Stage escenario = new Stage();
-            ControllerAdmin c = loader.getController();
-            c.setAdminLogged(id);
+            if(type.equals(USER_TYPES.admin)){
+                ControllerAdmin c = loader.getController();
+                c.setAdminLogged(id);
+            }
+            else{
+                ControllerUser c = loader.getController();
+                c.setUserID(id);
+            }
             escenario.setTitle(type.toString().toUpperCase());
-            escenario.setScene(new Scene(root, 460, 600));
+            int width = type.equals(USER_TYPES.admin) ? 460 : 600;
+            int height = type.equals(USER_TYPES.admin) ? 600 : 500;
+            escenario.setScene(new Scene(root, width, height));
             escenario.show();
             Stage actual = (Stage) entrar.getScene().getWindow();
             actual.close();

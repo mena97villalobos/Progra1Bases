@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -220,21 +221,7 @@ public class ControllerAdmin implements Initializable {
             VariablesSistema vs = GestorDB.gestor.read_variables();
             inc.setText(Float.toString(vs.inc));
             percent.setText(Float.toString(vs.percent));
-            try {
-                File tempFile = File.createTempFile("img_def", ".png");
-                tempFile.deleteOnExit();
-                FileOutputStream out = new FileOutputStream(tempFile);
-                IOUtils.copy(vs.imagen, out);
-                Image image = new Image(tempFile.toURI().toString());
-                imagenDef.setImage(image);
-                imagenActual = tempFile;
-            }
-            catch (FileNotFoundException e){
-                GestorDB.gestor.invocarAlerta("Error de archivo", Alert.AlertType.ERROR);
-            }
-            catch (IOException e){
-                GestorDB.gestor.invocarAlerta("Error de IO", Alert.AlertType.ERROR);
-            }
+            imagenActual = GestorDB.gestor.cargarImagen(imagenDef);
         });
         load.fire();
         /****************************/
