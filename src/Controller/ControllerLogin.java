@@ -53,6 +53,7 @@ public class ControllerLogin implements Initializable {
             else{
                 ControllerUser c = loader.getController();
                 c.setUserID(id);
+                c.iniciar();
             }
             escenario.setTitle(type.toString().toUpperCase());
             int width = type.equals(USER_TYPES.admin) ? 460 : 600;

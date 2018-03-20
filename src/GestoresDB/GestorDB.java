@@ -25,11 +25,6 @@ public class GestorDB {
     }
 
     public Connection connect() {
-        try{
-            gestor.connection.close();
-        } catch (SQLException e) {
-            System.out.println("Conexión no existe");
-        }
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
@@ -437,6 +432,31 @@ public class GestorDB {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public ArrayList read_subastas_usuario(int idCategoria, boolean filtrar){
+        String SQL = "SELECT * FROM read_subastas_usuario(?, ?);";
+        try {
+            ArrayList<Subastas> subastas = new ArrayList<>();
+            Subastas subasta;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setInt(1, idCategoria);
+            ps.setBoolean(2, filtrar);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String id = String.valueOf(rs.getInt("id"));
+                String vendedor = rs.getString("alias");
+                String fechaFin = rs.getString("fecha_Fin");
+                String descripcionItem = rs.getString("detallesItem");
+                subasta = new Subastas(id, vendedor, fechaFin, "", descripcionItem);
+                subastas.add(subasta);
+            }
+            return subastas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
     }
 
     public File cargarImagen(ImageView imagen){

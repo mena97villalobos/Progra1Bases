@@ -1,0 +1,447 @@
+1,1,Tarjetas de regalo
+2,1,Tarjetas de regalo de eBay
+3,1,Certificados de regalo
+4,1,Cupones
+5,1,Productos digitales
+6,2,Solo para adultos
+7,2,Desarrollo profesional y educación
+8,2,Ofertas especiales de eBay
+9,2,Herramientas de usuario de eBay
+10,2,Funeral y cementerio
+11,2,Genealogía
+12,2,Productos de información
+13,2,Metafísica
+14,2,Desarrollo personal
+15,2,Seguridad personal
+16,2,Productos y suministros religiosos
+17,2,Programa de puntos e incentivos
+18,2,Artículos extraños
+19,2,Otros
+20,3,Vidrio
+21,3,Cerámica y porcelana
+22,4,Boxeo artes marciales y artes marciales mixtas (MMA)
+23,4,Ciclismo
+24,4,Pesca
+25,4,Fitness running y yoga
+26,4,Golf
+27,4,Cacería
+28,4,Juegos en interiores
+29,4,Deportes al aire libre
+30,4,Deportes de equipo
+31,4,Tenis y deportes con raqueta
+32,4,Deportes acuáticos
+33,4,Deportes de invierno
+34,4,Otros
+35,4,Lotes al por mayor
+36,5,Publicidad
+37,5,Animales
+38,5,Dibujos animados y personajes
+39,5,Salas de juegos rocolas y pinball
+40,5,Autógrafos
+41,5,Bancos registros y ventas
+42,5,Artículos de bar
+43,5,Cuentas
+44,5,Botellas y aisladores
+45,5,Breweriana cerveza
+46,5,Casino
+47,5,Relojes
+48,5,Cómics
+49,5,Culturas y etnias
+50,5,Adornos de colección
+51,5,Disneyana
+52,5,Fantasía míticos y magia
+53,5,Memorabilia histórica
+54,5,Festivo y de temporada
+55,5,Cocina y hogar
+56,5,Cuchillos espadas y cuchillas
+57,5,Lámparas luces
+58,5,Ropa blanca y telas (1930 - presente)
+59,5,Objetos de metal
+60,5,Militaria
+61,5,Papel
+62,5,Bolígrafos e instrumentos para escribir
+63,5,Pez llaveros vasos promocionales
+64,5,Imágenes fotográficas
+65,5,Prendedores cabezones loncheras
+66,5,Postales
+67,5,Radio fonógrafo televisión teléfono
+68,5,Religión y espiritualidad
+69,5,Rocas fósiles y minerales
+70,5,Ciencia ficción y horror
+71,5,Ciencia y medicina (1930 - presente)
+72,5,Costura (1930 - presente)
+73,5,Recuerdos y memorabilia de viajes
+74,5,Productos relacionados con el tabaco
+75,5,Herramientas y cerraduras
+76,5,Tarjetas de colección
+77,5,Transporte
+78,5,Tocador perfume y productos de afeitar
+79,5,Vintage retro de mediados de siglo
+80,6,Servicios artísticos
+81,6,Ropa y joyería a la medida
+82,6,Servicios de subastas de eBay
+83,6,Diseño gráfico y de logotipos
+84,6,Servicios para mejoras del hogar
+85,6,Servicios basados en artículos
+86,6,Edición y duplicado de medios
+87,6,Impresión y personalización
+88,6,Restauración y reparación
+89,6,Servicios Web e informáticos
+90,6,Otros servicios
+91,7,Directo del artista
+92,7,Arte de anticuarios y revendedores
+93,7,Lotes al por mayor
+94,8,Aves de corral
+95,8,Aves
+96,8,Gatos
+97,8,Perros
+98,8,Peces y acuarios
+99,8,Caballos
+100,8,Reptiles
+101,8,Animales pequeños
+102,8,Lápidas y urnas
+103,8,Otros
+104,9,Vehículos y camionetas
+105,9,Motocicletas
+106,9,Otros vehículos y remolques
+107,9,Botes
+108,9,Vehículos de aventura recreativos
+109,9,Partes y accesorios
+110,10,Audio portátil y audífonos
+111,10,Televisor video y audio para el hogar
+112,10,Sistemas electrónicos del vehículo y GPS
+113,10,Sistemas de automatización (domótica)
+114,10,Vigilancia residencial
+115,10,Teléfonos para el hogar
+116,10,Baterías y energías multiusos
+117,10,Comunicación por radio
+118,10,Artefactos y otros sistemas electrónicos
+119,10,Sistemas electrónicos vintage
+120,11,Autógrafos (original)
+121,11,Autógrafos (reimpresos)
+122,11,Tarjetas
+123,11,Ropa para aficionados y recuerdos
+124,11,Memorabilia de juegos usada
+125,11,Autenticada por el fabricante
+126,11,Memorabilia de deportes antigua
+127,11,Lotes al por mayor
+128,12,Autógrafos-original
+129,12,Autógrafos-reimpresos
+130,12,Memorabilia de películas
+131,12,Memorabilia de música
+132,12,Memorabilia de televisión
+133,12,Memorabilia de teatro
+134,12,Memorabilia de juegos de video
+135,12,Otros
+136,13,Celulares y smartphones
+137,13,Relojes inteligentes
+138,13,Accesorios para teléfonos celulares
+139,13,Teléfonos con display
+140,13,Tarjetas SIM y tarjetas telefónicas
+141,13,Piezas y herramientas de repuesto
+142,13,Otros
+143,14,Artículos para bebé
+144,14,Seguridad y salud del bebé
+145,14,Baño y aseo
+146,14,Asientos de seguridad para autos
+147,14,Pañales
+148,14,Alimentación
+149,14,Recuerdos y anuncios de nacimiento
+150,14,Ropa de cama para niños
+151,14,Decoración de habitaciones de bebé
+152,14,Muebles para bebés
+153,14,Dejar los pañales
+154,14,Coches para bebés
+155,14,Accesorios para coches
+156,14,Juguetes para bebés
+157,14,Otros
+158,15,Comerciales
+159,15,Terreno
+160,15,Casas prefabricadas
+161,15,Residenciales
+162,15,Tiempos compartidos a la venta
+163,15,Otros bienes raíces
+164,16,Baño
+165,16,Ropa de cama
+166,16,Comida y bebidas
+167,16,Flores naturales y suministros
+168,16,Muebles
+169,16,Tarjetas y suministros para fiestas
+170,16,Decoración festiva y de temporada
+171,16,Decoración para el hogar
+172,16,Artículos para mejoras del hogar
+173,16,Materiales de limpieza para el hogar
+174,16,Niños y adolescentes
+175,16,Cocina comedor y bar
+176,16,Lámparas luces y ventiladores de techo
+177,16,Electrodomésticos grandes
+178,16,Alfombras y tapetes
+179,16,Herramientas
+180,16,Suministros para soldadura
+181,16,Decoración y herrajes para ventanas
+182,16,Patio jardín y espacios abiertos
+183,16,Lotes al por mayor
+184,16,Otros
+185,17,Agricultura y silvicultura
+186,17,Construcción
+187,17,Equipo eléctrico y de prueba
+188,17,Combustible y energía
+189,17,Cuidado de salud y laboratorio
+190,17,Equipo pesado
+191,17,Accesorios de equipo pesado
+192,17,Piezas y accesorios de equipo pesado
+193,17,Equipo ligero y herramientas
+194,17,Manufactura y metalurgia
+195,17,Suministro industrial y MRO
+196,17,Oficina
+197,17,Empaque y envío
+198,17,Artes gráficas y de impresión
+199,17,Restaurante y catering
+200,17,Sitios en internet y negocios en venta
+201,17,Otros
+202,18,Acordeones y concertinas
+203,18,Latón
+204,18,Equipo
+205,18,Guitarra
+206,18,Armónica
+207,18,Libros CD y videos de instrucciones
+208,18,Karaoke
+209,18,Percusión
+210,18,Pianos órganos y teclados
+211,18,Equipo de audio profesional
+212,18,Partituras y cancioneros
+213,18,Iluminación y efectos de escenario
+214,18,Cuerdas
+215,18,Instrumentos de viento-madera
+216,18,Lotes al por mayor
+217,18,Otros
+218,19,Boletos para deportes
+219,19,Boletos para conciertos
+220,19,Boletos para el teatro
+221,19,Pases para parques temáticos y clubes
+222,19,Pases de estacionamiento
+223,19,Experiencias especiales
+224,19,Otros
+225,20,Materiales para hacer osos
+226,20,Osos
+227,20,Muñecas
+228,20,Miniaturas para casas de muñeca
+229,20,Muñecas de papel
+230,21,Materiales para arte
+231,21,Cuentas y fabricación de joyas
+232,21,Vidrio y mosaicos
+233,21,Piezas de artesanía y acabadas
+234,21,Artes y artesanías para el hogar
+235,21,Artesanías infantiles
+236,21,Materiales multiusos para artesanía
+237,21,Artesanías con agujas e hilos
+238,21,Colec. de recortes y artesanías de papel
+239,21,Costura y tela
+240,21,Timbres y gofrados
+241,21,Otras artesanías
+242,22,Línea aérea
+243,22,Camping y casas rodantes
+244,22,Alquiler de automóviles
+245,22,Cruceros
+246,22,Alojamiento
+247,22,Equipaje
+248,22,Accesorios para equipaje
+249,22,Mapas
+250,22,Ferrocarril
+251,22,Accesorios de viaje
+252,22,Paquetes de vacaciones
+253,22,Otros
+254,23,Estados Unidos
+255,23,Canadá
+256,23,Gran Bretaña
+257,23,África
+258,23,Asia
+259,23,Australia y Oceanía
+260,23,Colonias británicas y territorios
+261,23,Caribe
+262,23,Europa
+263,23,Latinoamérica
+264,23,Oriente Medio
+265,23,Mundiales
+266,23,Estampillas tropicales
+267,23,Filatelia especializada
+268,23,Publicaciones y suministros
+269,23,Otros
+270,24,iPads tablets y lectores electrónicos
+271,24,Accesorios para iPad/Tableta/eBook
+272,24,Tablet & eBook Reader Parts
+273,24,Laptops y netbooks
+274,24,Computadoras y todo en uno
+275,24,Accs. para laptops y comp. de escritorio
+276,24,Cables y conectores
+277,24,Partes y componentes de computadora
+278,24,Unidades de disco almacenamiento y discos en blanco
+279,24,Redes y servidores empresariales
+280,24,Red y conectividad doméstica
+281,24,Teclados mouses y punteros
+282,24,Monitores proyectores y accesorios
+283,24,Protección distribución de alimentación
+284,24,Impresoras escáneres y suministros
+285,24,Software
+286,24,Manuales y recursos
+287,24,Informática vintage
+288,24,Otros
+289,25,En lingotes
+290,25,Monedas: EE. UU.
+291,25,Monedas: Canadá
+292,25,Monedas: antiguas
+293,25,Monedas: Edad Media
+294,25,Monedas: del mundo
+295,25,Objetos numismáticos
+296,25,Billetes: EE. UU.
+297,25,Billetes del mundo
+298,25,Publicaciones y suministros
+299,25,Acciones y bonos escripofilia
+300,25,Divisa virtual
+301,25,Otros
+302,26,Videojuegos
+303,26,Consolas de videojuego
+304,26,Accesorios de videojuegos
+305,26,Tarjetas de juego prepagadas
+306,26,Piezas y herramientas de repuesto
+307,26,Guías de estrategia y trampas
+308,26,Productos de videojuegos
+309,26,Otros
+310,27,DVD y Blu-ray
+311,27,Película fotográfica
+312,27,Discos láser
+313,27,UMD
+314,27,Cintas VHS
+315,27,Otros formatos
+316,27,Almacenamiento y accesorios para videos
+317,28,Binoculares y telescopios
+318,28,Drones con cámaras
+319,28,Cámara de video
+320,28,Cámaras digitales
+321,28,Accesorios de cámaras y fotografía
+322,28,Marcos de fotos digitales
+323,28,Fotografía de película
+324,28,Flashes y accesorios
+325,28,Lentes y filtros
+326,28,Iluminación y estudio
+327,28,Manuales y guías
+328,28,Piezas y herramientas de repuesto
+329,28,Trípodes y soportes
+330,28,Edición y producción de video
+331,28,Fotografías y películas vintage
+332,28,Lotes al por mayor
+333,28,Otros
+334,29,Joyas infantiles
+335,29,Compromiso y boda
+336,29,Étnicos regionales y tribales
+337,29,Joyas de moda
+338,29,Joyería fina
+339,29,Joyas artesanales hechas a mano
+340,29,Joyeros y organizadores de joyas
+341,29,Diseño y reparación de joyas
+342,29,Cuentas sueltas
+343,29,Diamantes y gemas sueltos
+344,29,Joyas para hombres
+345,29,Joyas vintage y antiguas
+346,29,Relojes
+347,29,Otros
+348,30,Antigüedades
+349,30,Arquitectónico y jardín
+350,30,Antigüedades de Asia
+351,30,Libros y manuscritos
+352,30,Artes decorativas
+353,30,Etnográfico
+354,30,Muebles
+355,30,Hogar y chimeneas
+356,30,Linos y textiles (antes de 1930)
+357,30,Mapas atlas y globos terráqueos
+358,30,Marítimo
+359,30,Mercantil comercio y fábricas
+360,30,Instrumentos musicales (antes de 1930)
+361,30,Épocas y estilos
+362,30,Primitivos
+363,30,Restauración y cuidado
+364,30,Alfombras y tapetes
+365,30,Ciencia y medicina (antes de 1930)
+366,30,Costura (antes de 1930)
+367,30,Plateado
+368,30,Réplicas de antigüedades
+369,30,Otros
+370,31,Casetes
+371,31,CD
+372,31,Discos
+373,31,Otros formatos
+374,31,Almacenamiento y accesorios para videos
+375,31,Lotes al por mayor
+376,32,Ropa de infantes y bebés
+377,32,Vestuario zapatos y accesorios de niños
+378,32,Disfraces representación teatro
+379,32,Ropa étnica y cultural
+380,32,Trajes de baile
+381,32,Accesorios para hombre
+382,32,Ropa para hombre
+383,32,Zapatos para hombres
+384,32,Uniformes y ropa de trabajo
+385,32,Vestuario zapatos y accesorios unisex
+386,32,Boda y ocasión formal
+387,32,Accesorios para mujer
+388,32,Ropa para mujer
+389,32,Carteras y bolsos de mujer
+390,32,Calzado de mujer
+391,32,Vintage
+392,32,Lotes grandes y pequeños al por mayor
+393,33,Figuras de acción
+394,33,Afelpados con pelotas de semillas
+395,33,Juguetes de construcción
+396,33,Juguetes clásicos
+397,33,Vehículos de presofusión y de juguete
+398,33,Educativos
+399,33,Electrónicos baterías y a cuerda
+400,33,Juguetes de comida rápida y cereales
+401,33,Juegos
+402,33,Canicas
+403,33,Modelos de ferrocarriles y trenes
+404,33,Modelos y juegos
+405,33,Juguetes y estructuras para exterior
+406,33,Juguetes preescolares y juegos de roles
+407,33,Rompecabezas
+408,33,Control por radio y mando
+409,33,Robots monstruos y juguetes del espacio
+410,33,Automóviles con ranuras
+411,33,Animales de peluche
+412,33,Soldados de juguete
+413,33,Juegos de cartas intercambiables
+414,33,Juguetes de personajes TV y películas
+415,33,Juguetes antiguos
+416,34,Accesorios
+417,34,Antigüedades y piezas de colección
+418,34,Libro en audio
+419,34,Catálogos
+420,34,Niños y adultos jóvenes
+421,34,Libros de cocina
+422,34,Ficción y literatura
+423,34,Publicaciones anteriores de revistas
+424,34,No ficción
+425,34,Libros de textos educación
+426,34,Otros
+427,35,Cuerpo y baño
+428,35,Suplementos alimenticios nutrición
+429,35,Fragancias
+430,35,Cuidado del cabello y peinado
+431,35,Cuidado de la salud
+432,35,Maquillaje
+433,35,Masaje
+434,35,Medicina movilidad y discapacidad
+435,35,Cuidado de las uñas manicure y pedicure
+436,35,Remedios naturales y homeopáticos
+437,35,Higiene bucal
+438,35,Medicamentos de venta libre
+439,35,Equipo de spa y salón
+440,35,Afeitado y depilación
+441,35,Cuidado de la piel
+442,35,Protección solar y bronceador
+443,35,Tatuajes y arte corporal
+444,35,Cuidado de la vista
+445,35,Control de peso
+446,35,Lotes al por mayor
+447,35,Otros

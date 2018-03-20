@@ -1,11 +1,13 @@
 package Controller;
 
 import GestoresDB.GestorDB;
+import Model.Subastas;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -48,6 +50,24 @@ public class ControllerUser implements Initializable {
     public TextArea detallesEntrega;
     @FXML
     public Button crear;
+    @FXML
+    public TableView listaSubastas;
+    @FXML
+    public TableColumn idSubasta;
+    @FXML
+    public TableColumn vendedor;
+    @FXML
+    public TableColumn fechaFin;
+    @FXML
+    public TableColumn descrItem;
+    @FXML
+    public ComboBox catPrimaria1;
+    @FXML
+    public ComboBox catSecundaria1;
+    @FXML
+    public Button filtrar;
+    @FXML
+    public Button pujar;
 
     private int userID;
     private File imagenSeleccionada;
@@ -105,12 +125,24 @@ public class ControllerUser implements Initializable {
                         Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                         float precioInit = Float.parseFloat(precio.getText());
                         String detallesEnt = detallesEntrega.getText();
-                        GestorDB.gestor.crear_subasta(this.userID, idItem, precioInit, timestamp, detallesEnt);
+                        int idSubasta = GestorDB.gestor.crear_subasta(this.userID, idItem, precioInit, timestamp, detallesEnt);
+                        if(idSubasta == 0)
+                            GestorDB.gestor.invocarAlerta("Error al crear subasta", Alert.AlertType.ERROR);
                     }
                 }
             }
         });
         /*******************************************/
+        /*Tab Comprar*/
+        crearTaskTabComprar();
+        filtrar.setOnAction(event -> {
+            String primariaSeleccionada = (String) catPrimaria1.getSelectionModel().getSelectedItem();
+            String secundariaSeleccionada = (String) catSecundaria1.getSelectionModel().getSelectedItem();
+            int idCategoria = GestorDB.gestor.get_id_categoria(primariaSeleccionada, secundariaSeleccionada);
+            ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(idCategoria, true);
+            listaSubastas.setItems(FXCollections.observableArrayList(s));
+        });
+        /******************************************/
     }
 
     public void crearTask(){
@@ -133,7 +165,43 @@ public class ControllerUser implements Initializable {
         t.start();
     }
 
+    public void crearTaskTabComprar(){
+        Task task = new Task() {
+            @Override
+            protected Void call() {
+                catPrimaria1.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
+                catSecundaria1.setDisable(true);
+                filtrar.setDisable(true);
+                while(catPrimaria1.getSelectionModel().isEmpty()){}
+                catPrimaria1.setDisable(true);
+                catSecundaria1.setDisable(false);
+                String primariaSeleccionada = (String) catPrimaria1.getSelectionModel().getSelectedItem();
+                ArrayList<String> secundarias = GestorDB.gestor.read_categoria_secundaria(primariaSeleccionada);
+                catSecundaria1.setItems(FXCollections.observableArrayList(secundarias));
+                while(catSecundaria1.getSelectionModel().isEmpty()){}
+                catSecundaria1.setDisable(true);
+                filtrar.setDisable(false);
+                return null;
+            }
+        };
+        Thread t = new Thread(task);
+        t.start();
+    }
+
     public void setUserID(int userID) {
         this.userID = userID;
+    }
+
+    public void configurarColumnas(){
+        idSubasta.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
+        vendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
+        fechaFin.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
+        descrItem.setCellValueFactory(new PropertyValueFactory<Subastas, String>("detallesItem"));
+    }
+
+    public void iniciar(){
+        configurarColumnas();
+        ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(0, false);
+        listaSubastas.setItems(FXCollections.observableArrayList(s));
     }
 }

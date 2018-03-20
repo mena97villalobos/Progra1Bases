@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="441.0" prefWidth="525.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ControllerSubastaUsuario">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Vendedor" />
+      <TextField fx:id="alias" editable="false" layoutX="93.0" layoutY="9.0" />
+      <Label layoutX="14.0" layoutY="54.0" text="Puja Actual" />
+      <TextField fx:id="pujaActual" editable="false" layoutX="93.0" layoutY="49.0" />
+      <Label layoutX="14.0" layoutY="94.0" text="Detalles Entrega" />
+      <TextArea fx:id="detEntrega" layoutX="14.0" layoutY="115.0" prefHeight="65.0" prefWidth="266.0" wrapText="true" />
+      <Label layoutX="14.0" layoutY="190.0" text="Descripción Item" />
+      <TextArea fx:id="descrItem" layoutX="14.0" layoutY="211.0" prefHeight="65.0" prefWidth="272.0" wrapText="true" />
+      <Label layoutX="300.0" layoutY="14.0" text="Imágen" />
+      <ImageView fx:id="imagen" fitHeight="179.0" fitWidth="193.0" layoutX="300.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" />
+      <Line endX="475.0" layoutX="25.0" layoutY="288.0" />
+      <Button fx:id="detallesVendedor" layoutX="300.0" layoutY="244.0" mnemonicParsing="false" text="Ver Detalles del Vendedor" />
+      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="300.0" prefHeight="133.0" prefWidth="464.0" text="Pujar">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="101.0" prefWidth="492.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="Incremento Mínimo" />
+                  <TextField fx:id="incrMin" editable="false" layoutX="14.0" layoutY="51.0" prefHeight="31.0" prefWidth="131.0" />
+                  <Line endY="-40.0" layoutX="160.0" layoutY="46.0" startY="50.0" />
+                  <Label layoutX="169.0" layoutY="14.0" text="Monto de Puja" />
+                  <TextField fx:id="puja" layoutX="169.0" layoutY="51.0" />
+                  <Button fx:id="pujar" layoutX="369.0" layoutY="51.0" mnemonicParsing="false" text="Pujar" />
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+      <Label layoutX="296.0" layoutY="221.0" text="FechaFin" />
+      <Label fx:id="fechaFin" layoutX="362.0" layoutY="221.0" prefHeight="21.0" prefWidth="131.0" text="Label" />
+   </children>
+</AnchorPane>

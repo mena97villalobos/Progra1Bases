@@ -2,11 +2,14 @@ package Model;
 
 import javafx.beans.property.SimpleStringProperty;
 
+import java.io.File;
+
 public class Subastas {
     private SimpleStringProperty id;
     private SimpleStringProperty vendedor;
     private SimpleStringProperty fechaFin;
     private SimpleStringProperty monto;
+    private SimpleStringProperty detallesItem;
     private SimpleStringProperty montoFinal;
     private SimpleStringProperty comentarioVendedor;
     private SimpleStringProperty comentarioComprador;
@@ -27,6 +30,15 @@ public class Subastas {
         this.montoFinal = new SimpleStringProperty(montoFinal);
         this.comentarioVendedor = new SimpleStringProperty(comentarioVendedor);
         this.comentarioComprador = new SimpleStringProperty(comentarioComprador);
+    }
+
+    public Subastas(String id, String vendedor, String fechaFin,
+                    String monto, String detallesItem) {
+        this.id = new SimpleStringProperty(id);
+        this.vendedor = new SimpleStringProperty(vendedor);
+        this.fechaFin = new SimpleStringProperty(fechaFin);
+        this.monto = new SimpleStringProperty(monto);
+        this.detallesItem = new SimpleStringProperty(detallesItem);
     }
 
     public String getId() {
@@ -59,5 +71,9 @@ public class Subastas {
 
     public void setMonto(String monto) {
         this.monto.set(monto);
+    }
+
+    public String getDetallesItem() {
+        return detallesItem.get();
     }
 }

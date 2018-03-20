@@ -722,3 +722,67 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION read_subastas_usuario(_inIDcategoria INTEGER, _inFiltrar BOOLEAN)
+  RETURNS TABLE(id INTEGER, alias TEXT, fecha_fin TEXT, detallesItem TEXT)
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    IF _inFiltrar THEN
+      RETURN QUERY SELECT s.id, u.alias, s.fecha_fin::TEXT, i.descripcion FROM subastas s
+      INNER JOIN items i ON s.fk_item = i.id
+      INNER JOIN usuarios u ON s.fk_vendedor = u.id
+      WHERE s.fecha_fin > CURRENT_TIMESTAMP AND i.fk_categoria = _inIDcategoria;
+    ELSE
+      RETURN QUERY SELECT s.id, u.alias, s.fecha_fin::TEXT, i.descripcion FROM subastas s
+      INNER JOIN items i ON s.fk_item = i.id
+      INNER JOIN usuarios u ON s.fk_vendedor = u.id
+      WHERE s.fecha_fin > CURRENT_TIMESTAMP;
+    END IF;
+  END;
+$$;
+
+DROP FUNCTION read_subasta_item(INTEGER);
+CREATE OR REPLACE FUNCTION read_subasta_item(_inIDsubasta INTEGER)
+  RETURNS TABLE(
+    id INTEGER,
+    alias TEXT,
+    pujaActual FLOAT8,
+    detEntrega TEXT,
+    descrItem TEXT,
+    imagen BYTEA,
+    fechaFin TEXT,
+    incrMin FLOAT8
+  )
+  LANGUAGE plpgsql
+  AS $$
+  DECLARE
+    _outID INTEGER;
+    _outAlias TEXT;
+    _outPujaActual FLOAT8;
+    _outDetallesEntrega TEXT;
+    _outDescrItem TEXT;
+    _outImagen BYTEA;
+    _outFechaFin TEXT;
+    _outIncrMin FLOAT8;
+    _pujaActual INTEGER;
+  BEGIN
+    SELECT s.id, s.detalles_entrega, i.descripcion, i.imagen, s.fecha_fin, u.alias, s.fk_puja_actual
+    INTO _outID, _outDetallesEntrega, _outDescrItem, _outImagen, _outFechaFin, _outAlias, _pujaActual
+    FROM subastas s
+    INNER JOIN usuarios u ON s.fk_vendedor = u.id
+    INNER JOIN items i ON s.fk_item = i.id
+    WHERE s.id = _inIDsubasta;
+
+    IF _pujaActual NOTNULL THEN
+      SELECT p.monto:: NUMERIC :: FLOAT8 INTO _outPujaActual FROM subastas s
+      INNER JOIN pujas p ON s.fk_puja_actual = p.id
+      WHERE s.id = _inIDsubasta;
+    ELSE
+      SELECT s.precio_inicial:: NUMERIC :: FLOAT8 INTO _outPujaActual FROM subastas s WHERE s.id = _inIDsubasta;
+    SELECT a.increment_min:: NUMERIC :: FLOAT8 INTO _outIncrMin FROM administradores a LIMIT 1;
+    END IF;
+
+    RETURN QUERY
+    SELECT _outID, _outAlias, _outPujaActual, _outDetallesEntrega, _outDescrItem, _outImagen, _outFechaFin, _outIncrMin;
+  END;
+$$;
