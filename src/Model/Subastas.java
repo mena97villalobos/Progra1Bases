@@ -3,6 +3,7 @@ package Model;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.io.File;
+import java.io.InputStream;
 
 public class Subastas {
     private SimpleStringProperty id;
@@ -11,8 +12,23 @@ public class Subastas {
     private SimpleStringProperty monto;
     private SimpleStringProperty detallesItem;
     private SimpleStringProperty montoFinal;
+    private SimpleStringProperty detEntrega;
+    private SimpleStringProperty incrMin;
     private SimpleStringProperty comentarioVendedor;
     private SimpleStringProperty comentarioComprador;
+    public InputStream imagen;
+
+    public Subastas(String id, String vendedor, String fechaFin, String detallesItem, String montoFinal,
+                    String detEntrega, String incrMin, InputStream imagen) {
+        this.id = new SimpleStringProperty(id);
+        this.vendedor = new SimpleStringProperty(vendedor);
+        this.fechaFin = new SimpleStringProperty(fechaFin);
+        this.detallesItem = new SimpleStringProperty(detallesItem);
+        this.montoFinal = new SimpleStringProperty(montoFinal);
+        this.detEntrega = new SimpleStringProperty(detEntrega);
+        this.incrMin = new SimpleStringProperty(incrMin);
+        this.imagen = imagen;
+    }
 
     public Subastas(String _id, String _vendedor, String _fechaFin, String _monto){
         this.id = new SimpleStringProperty(_id);
@@ -75,5 +91,25 @@ public class Subastas {
 
     public String getDetallesItem() {
         return detallesItem.get();
+    }
+
+    public String getMontoFinal() {
+        return montoFinal.get();
+    }
+
+    public String getDetEntrega() {
+        return detEntrega.get();
+    }
+
+    public String getIncrMin() {
+        return incrMin.get();
+    }
+
+    public String getComentarioVendedor() {
+        return comentarioVendedor.get();
+    }
+
+    public String getComentarioComprador() {
+        return comentarioComprador.get();
     }
 }

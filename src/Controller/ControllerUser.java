@@ -2,10 +2,14 @@ package Controller;
 
 import GestoresDB.GestorDB;
 import Model.Subastas;
+import Model.VariablesSistema;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -14,6 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -96,7 +101,8 @@ public class ControllerUser implements Initializable {
             }
         });
         selectDefault.setOnAction(event -> {
-            imagenSeleccionada = GestorDB.gestor.cargarImagen(imagen);
+            VariablesSistema vs = GestorDB.gestor.read_variables();
+            imagenSeleccionada = GestorDB.gestor.cargarImagen(imagen, vs.imagen);
         });
         crear.setOnAction(event -> {
             //cargar Datos Item
@@ -141,6 +147,26 @@ public class ControllerUser implements Initializable {
             int idCategoria = GestorDB.gestor.get_id_categoria(primariaSeleccionada, secundariaSeleccionada);
             ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(idCategoria, true);
             listaSubastas.setItems(FXCollections.observableArrayList(s));
+        });
+        pujar.setOnAction(event -> {
+            Subastas selectedItem = (Subastas) listaSubastas.getSelectionModel().getSelectedItem();
+            if(selectedItem != null) {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    Parent root = loader.load(getClass().getResource("../View/subastaUsuario.fxml").openStream());
+                    ControllerSubastaUsuario c = loader.getController();
+                    c.iniciar(Integer.valueOf(selectedItem.getId()));
+                    Stage escenario = new Stage();
+                    escenario.setTitle("Subasta id: " + selectedItem.getId());
+                    escenario.setScene(new Scene(root, 525, 441));
+                    escenario.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else{
+                GestorDB.gestor.invocarAlerta("Seleccione una subasta", Alert.AlertType.ERROR);
+            }
         });
         /******************************************/
     }

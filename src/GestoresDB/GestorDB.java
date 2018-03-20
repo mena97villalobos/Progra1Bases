@@ -459,15 +459,41 @@ public class GestorDB {
         return null;
     }
 
-    public File cargarImagen(ImageView imagen){
-        VariablesSistema vs = gestor.read_variables();
+    public Subastas read_subastas_item(int idSubasta){
+        String SQL = "SELECT * FROM read_subasta_item(?);";
+        try {
+            Subastas subasta = null;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setInt(1, idSubasta);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                String id = String.valueOf(rs.getInt("id"));
+                String vendedor = rs.getString("alias");
+                String pujaActual = String.valueOf(rs.getFloat("pujaActual"));
+                String detEntrega = rs.getString("detEntrega");
+                String descripcionItem = rs.getString("descrItem");
+                String fechaFin = rs.getString("fechaFin");
+                String incrMin = rs.getString("incrMin");
+                byte[] imgBytes = rs.getBytes("imagen");
+                InputStream i = new ByteArrayInputStream(imgBytes);
+                subasta = new Subastas(id, vendedor, fechaFin, descripcionItem, pujaActual, detEntrega, incrMin, i);
+            }
+            return subasta;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
+    public File cargarImagen(ImageView imageView, InputStream imagen){
         try {
             File tempFile = File.createTempFile("img_def", ".png");
             tempFile.deleteOnExit();
             FileOutputStream out = new FileOutputStream(tempFile);
-            IOUtils.copy(vs.imagen, out);
+            IOUtils.copy(imagen, out);
             Image image = new Image(tempFile.toURI().toString());
-            imagen.setImage(image);
+            imageView.setImage(image);
             return tempFile;
         }
         catch (FileNotFoundException e){
