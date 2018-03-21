@@ -52,13 +52,14 @@ public class GestorDB {
                  idUser = rs.getInt(1);
             pstmt.close();
             connection.close();
-            if(admin){
-                this.user = "postgres";
-                connection = connect();
-            }
-            else{
-                this.user = "postgres";
-                connection = connect();
+            if(idUser != 0) {
+                if (admin) {
+                    this.user = "postgres";
+                    connection = connect();
+                } else {
+                    this.user = "postgres";
+                    connection = connect();
+                }
             }
             return idUser;
         } catch (SQLException e) {
@@ -484,6 +485,23 @@ public class GestorDB {
             invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
         }
         return null;
+    }
+
+    public int pujar(int idSubasta, int idComprador, float monto){
+        String SQL = "SELECT * FROM crear_puja(?, ?, ?)";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, idSubasta);
+            pstmt.setInt(2, idComprador);
+            pstmt.setFloat(3, monto);
+            ResultSet rs = pstmt.executeQuery();
+            invocarAlerta("Puja Enviada", Alert.AlertType.INFORMATION);
+            if(rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public File cargarImagen(ImageView imageView, InputStream imagen){

@@ -296,17 +296,41 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION crear_puja(_inidsubasta INTEGER, _inidcomprador INTEGER, _inmonto REAL)
-  RETURNS VOID
+DROP FUNCTION crear_puja(INTEGER, INTEGER, REAL);
+CREATE OR REPLACE FUNCTION crear_puja(_inidsubasta INTEGER, _inidcomprador INTEGER, _inmonto FLOAT8)
+  RETURNS INTEGER
 LANGUAGE plpgsql
 AS $$
 DECLARE
   currentDate DATE;
+  vendedor INTEGER;
+  incrMin FLOAT8;
+  pujaActual FLOAT8;
+  fk_puja_actual INTEGER;
 BEGIN
-  SELECT CURRENT_DATE
-  INTO currentDate;
-  INSERT INTO pujas (fk_comprador, monto, fecha, fk_subasta)
-  VALUES (_inIDcomprador, _inMonto :: MONEY, currentDate, _inIDsubasta);
+
+  SELECT CURRENT_TIMESTAMP INTO currentDate;
+  SELECT s.fk_vendedor INTO vendedor FROM subastas s WHERE s.id = _inidsubasta;
+  SELECT p.id INTO fk_puja_actual FROM subastas s INNER JOIN pujas p ON s.fk_puja_actual = p.id WHERE s.id = _inidsubasta;
+  SELECT a.increment_min :: NUMERIC :: FLOAT8 INTO incrMin FROM administradores a LIMIT 1;
+  IF fk_puja_actual NOTNULL THEN
+    SELECT p.monto :: NUMERIC :: FLOAT8 INTO pujaActual FROM pujas p WHERE id = fk_puja_actual;
+  ELSE
+    SELECT 0.0 :: NUMERIC :: FLOAT8 INTO pujaActual;
+  END IF;
+  IF vendedor = _inidcomprador THEN
+    RETURN 0;
+  ELSE
+    IF (pujaActual + incrMin) < _inmonto THEN
+      WITH insrt AS
+      (INSERT INTO pujas (fk_comprador, monto, fecha, fk_subasta)
+      VALUES (_inIDcomprador, _inMonto :: NUMERIC :: MONEY, currentDate, _inIDsubasta) RETURNING id)
+      UPDATE subastas s SET s.fk_puja_actual = insrt.id WHERE s.id = _inidsubasta;
+      RETURN 1;
+    ELSE
+      RETURN 0;
+    END IF;
+  END IF;
 END;
 $$;
 
@@ -429,12 +453,12 @@ AS $$
 BEGIN
   IF _inAdmin
   THEN
-    UPDATE administradores A
-    SET A.password = crypt(_inPass, gen_salt("bf"))
-    WHERE A.id = _inID;
+    UPDATE administradores
+    SET password = crypt(_inPass, gen_salt('bf'))
+    WHERE id = _inID;
   ELSE
     UPDATE usuarios U
-    SET U.password = crypt(_inPass, gen_salt("bf"))
+    SET U.password = crypt(_inPass, gen_salt('bf'))
     WHERE U.id = _inID;
   END IF;
 END;
@@ -741,7 +765,6 @@ CREATE OR REPLACE FUNCTION read_subastas_usuario(_inIDcategoria INTEGER, _inFilt
   END;
 $$;
 
-DROP FUNCTION read_subasta_item(INTEGER);
 CREATE OR REPLACE FUNCTION read_subasta_item(_inIDsubasta INTEGER)
   RETURNS TABLE(
     id INTEGER,

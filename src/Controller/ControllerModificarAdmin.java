@@ -31,7 +31,7 @@ public class ControllerModificarAdmin implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         guardar.setOnAction(event -> {
             //Revisar cambio de password
-            if (!passActual.getText().equals("") && nuevoPass.getText().equals("")) {
+            if (!passActual.getText().equals("") && !nuevoPass.getText().equals("")) {
                 int id = GestorDB.gestor.validate_user(alias.getText(), passActual.getText(), true);
                 if (id != 0) {
                     GestorDB.gestor.update_password(Integer.parseInt(modificando.getId()), nuevoPass.getText(), true);

@@ -156,6 +156,7 @@ public class ControllerUser implements Initializable {
                     Parent root = loader.load(getClass().getResource("../View/subastaUsuario.fxml").openStream());
                     ControllerSubastaUsuario c = loader.getController();
                     c.iniciar(Integer.valueOf(selectedItem.getId()));
+                    c.idUsuario = this.userID;
                     Stage escenario = new Stage();
                     escenario.setTitle("Subasta id: " + selectedItem.getId());
                     escenario.setScene(new Scene(root, 525, 441));

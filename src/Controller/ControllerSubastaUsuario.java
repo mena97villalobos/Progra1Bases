@@ -36,6 +36,7 @@ public class ControllerSubastaUsuario implements Initializable {
     public Button pujar;
 
     public Subastas revisando;
+    public int idUsuario;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -51,5 +52,10 @@ public class ControllerSubastaUsuario implements Initializable {
         GestorDB.gestor.cargarImagen(imagen, revisando.imagen);
         fechaFin.setText(revisando.getFechaFin());
         incrMin.setText(revisando.getIncrMin());
+        pujar.setOnAction(event -> {
+            float monto = Float.valueOf(puja.getText());
+            int id = Integer.valueOf(revisando.getId());
+            GestorDB.gestor.pujar(id, idUsuario, monto);
+        });
     }
 }

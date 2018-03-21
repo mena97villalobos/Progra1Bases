@@ -20,13 +20,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.apache.commons.io.IOUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -353,7 +349,7 @@ public class ControllerAdmin implements Initializable {
         fechaFin.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
     }
 
-    public void cargarUsuarios(){
+    private void cargarUsuarios(){
         ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
         ObservableList<Persona> listaUsers = FXCollections.observableArrayList(usuarios);
         tableUser.setItems(listaUsers);
@@ -363,7 +359,7 @@ public class ControllerAdmin implements Initializable {
         listaUsuarios.setItems(listaUsers);
     }
 
-    public void modificarUsuario(Persona persona){
+    private void modificarUsuario(Persona persona){
         Usuario user = GestorDB.gestor.get_user_info(Integer.parseInt(persona.getId()));
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -380,7 +376,7 @@ public class ControllerAdmin implements Initializable {
         }
     }
 
-    public void modificarAdmin(Persona persona){
+    private void modificarAdmin(Persona persona){
         try {
             FXMLLoader loader = new FXMLLoader();
             Parent root = loader.load(getClass().getResource("../View/modificar_admin.fxml").openStream());
@@ -396,7 +392,7 @@ public class ControllerAdmin implements Initializable {
         }
     }
 
-    public void crearTask(){
+    private void crearTask(){
         //Thread para dejar bloqueado categoria secundaria y el boton de filtrar
         Task task = new Task() {
             @Override
