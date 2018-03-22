@@ -504,6 +504,31 @@ public class GestorDB {
         return 0;
     }
 
+    public ArrayList get_subastas_usuario(int idUser){
+        String SQL = "SELECT * FROM get_subastas_usuario(?);";
+        try {
+            ArrayList<Subastas> subastas = new ArrayList<>();
+            Subastas subasta;
+            PreparedStatement ps = connection.prepareStatement(SQL);
+            ps.setInt(1, idUser);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                int id = rs.getInt("id");
+                String fechaFin = rs.getString("fechafin");
+                String pujaActual = String.valueOf(rs.getFloat("montoActual"));
+                String calificacion = rs.getString("calificacion");
+                String vendedor = rs.getString("alias");
+                subasta = new Subastas(id, fechaFin, pujaActual, calificacion, vendedor);
+                subastas.add(subasta);
+            }
+            return subastas;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
+        }
+        return null;
+    }
+
     public File cargarImagen(ImageView imageView, InputStream imagen){
         try {
             File tempFile = File.createTempFile("img_def", ".png");

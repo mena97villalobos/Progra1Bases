@@ -296,7 +296,6 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION crear_puja(INTEGER, INTEGER, REAL);
 CREATE OR REPLACE FUNCTION crear_puja(_inidsubasta INTEGER, _inidcomprador INTEGER, _inmonto FLOAT8)
   RETURNS INTEGER
 LANGUAGE plpgsql
@@ -809,3 +808,30 @@ CREATE OR REPLACE FUNCTION read_subasta_item(_inIDsubasta INTEGER)
     SELECT _outID, _outAlias, _outPujaActual, _outDetallesEntrega, _outDescrItem, _outImagen, _outFechaFin, _outIncrMin;
   END;
 $$;
+
+CREATE OR REPLACE FUNCTION get_subastas_usuario(_inIDusuario INTEGER)
+  RETURNS TABLE(
+    id INTEGER,
+    fechaFin TEXT,
+    montoActual FLOAT8,
+    calificacion TEXT,
+    alias TEXT
+  )
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+  RETURN QUERY
+    SELECT
+    s.id,
+    s.fecha_fin::TEXT,
+    (CASE WHEN s.fk_puja_actual ISNULL THEN 0.0 :: NUMERIC :: FLOAT8 ELSE p.monto :: NUMERIC :: FLOAT8 END),
+    (CASE WHEN s.fk_puja_actual ISNULL  THEN 'No Disponible' ELSE u.calificacion::TEXT END),
+    (CASE WHEN s.fk_puja_actual ISNULL  THEN 'No Disponible' ELSE u.alias::TEXT END)
+    FROM subastas s
+    LEFT JOIN pujas p ON s.fk_puja_actual = p.id
+    LEFT JOIN usuarios u ON p.fk_comprador = u.id
+    WHERE s.fk_vendedor = _inIDusuario;
+  END;
+$$;
+
+

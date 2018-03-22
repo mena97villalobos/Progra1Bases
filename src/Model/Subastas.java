@@ -1,8 +1,6 @@
 package Model;
 
 import javafx.beans.property.SimpleStringProperty;
-
-import java.io.File;
 import java.io.InputStream;
 
 public class Subastas {
@@ -16,6 +14,7 @@ public class Subastas {
     private SimpleStringProperty incrMin;
     private SimpleStringProperty comentarioVendedor;
     private SimpleStringProperty comentarioComprador;
+    private SimpleStringProperty calificacionUsuario;
     public InputStream imagen;
 
     public Subastas(String id, String vendedor, String fechaFin, String detallesItem, String montoFinal,
@@ -57,6 +56,14 @@ public class Subastas {
         this.detallesItem = new SimpleStringProperty(detallesItem);
     }
 
+    public Subastas(int id, String fechaFin, String monto, String calificacion, String alias){
+        this.id = new SimpleStringProperty(String.valueOf(id));
+        this.fechaFin = new SimpleStringProperty(fechaFin);
+        this.monto = new SimpleStringProperty(monto);
+        this.calificacionUsuario = new SimpleStringProperty(calificacion);
+        this.vendedor = new SimpleStringProperty(alias);
+    }
+
     public String getId() {
         return id.get();
     }
@@ -69,10 +76,6 @@ public class Subastas {
         return vendedor.get();
     }
 
-    public void setVendedor(String vendedor) {
-        this.vendedor.set(vendedor);
-    }
-
     public String getFechaFin() {
         return fechaFin.get();
     }
@@ -83,10 +86,6 @@ public class Subastas {
 
     public String getMonto() {
         return monto.get();
-    }
-
-    public void setMonto(String monto) {
-        this.monto.set(monto);
     }
 
     public String getDetallesItem() {
@@ -111,5 +110,9 @@ public class Subastas {
 
     public String getComentarioComprador() {
         return comentarioComprador.get();
+    }
+
+    public String getCalificacionUsuario() {
+        return calificacionUsuario.get();
     }
 }

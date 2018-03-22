@@ -73,6 +73,20 @@ public class ControllerUser implements Initializable {
     public Button filtrar;
     @FXML
     public Button pujar;
+    @FXML
+    public TableView tablaMisSubastas;
+    @FXML
+    public TableColumn idVendiendo;
+    @FXML
+    public TableColumn fechaVendiendo;
+    @FXML
+    public TableColumn pujaVendiendo;
+    @FXML
+    public TableColumn calificacion;
+    @FXML
+    public Button actualizar;
+    @FXML
+    public TableColumn aliasOfertante;
 
     private int userID;
     private File imagenSeleccionada;
@@ -224,11 +238,19 @@ public class ControllerUser implements Initializable {
         vendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
         fechaFin.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
         descrItem.setCellValueFactory(new PropertyValueFactory<Subastas, String>("detallesItem"));
+        idVendiendo.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
+        pujaVendiendo.setCellValueFactory(new PropertyValueFactory<Subastas, String>("monto"));
+        fechaVendiendo.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
+        calificacion.setCellValueFactory(new PropertyValueFactory<Subastas, String>("calificacionUsuario"));
+        aliasOfertante.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
     }
 
     public void iniciar(){
         configurarColumnas();
         ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(0, false);
         listaSubastas.setItems(FXCollections.observableArrayList(s));
+        s.clear();
+        s = GestorDB.gestor.get_subastas_usuario(this.userID);
+        tablaMisSubastas.setItems(FXCollections.observableArrayList(s));
     }
 }

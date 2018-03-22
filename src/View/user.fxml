@@ -81,6 +81,29 @@
                      </children></AnchorPane>
             </content>
           </Tab>
+            <Tab text="Mis Subastas">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tablaMisSubastas" layoutY="-3.0" prefHeight="403.0" prefWidth="600.0">
+                          <columns>
+                            <TableColumn fx:id="idVendiendo" text="ID" />
+                              <TableColumn fx:id="pujaVendiendo" prefWidth="115.0" text="Puja Actual" />
+                              <TableColumn fx:id="fechaVendiendo" prefWidth="125.0" text="Fecha Fin" />
+                              <TableColumn fx:id="calificacion" prefWidth="171.0" text="Calificación Ofertante" />
+                              <TableColumn fx:id="aliasOfertante" prefWidth="108.0" text="Ofertante" />
+                          </columns>
+                        </TableView>
+                        <Button fx:id="actualizar" layoutX="258.0" layoutY="416.0" mnemonicParsing="false" text="Actualizar" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Mis Compras">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
             <Tab text="Listas">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
