@@ -1,9 +1,11 @@
 package Controller;
 
 import GestoresDB.GestorDB;
+import Model.Persona;
 import Model.Subastas;
 import Model.VariablesSistema;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -87,6 +89,33 @@ public class ControllerUser implements Initializable {
     public Button actualizar;
     @FXML
     public TableColumn aliasOfertante;
+    @FXML
+    public TableView tablaMisCompras;
+    @FXML
+    public TableColumn idComprado;
+    @FXML
+    public TableColumn pujaComprado;
+    @FXML
+    public TableColumn fechaComprado;
+    @FXML
+    public TableColumn calificacionVendedor;
+    @FXML
+    public TableColumn aliasVendedor;
+    @FXML
+    public Button actualizarMisCompras;
+    @FXML
+    public TableView listaUsuarios;
+    @FXML
+    public TableColumn idUserLista;
+    @FXML
+    public TableColumn aliasLista;
+    @FXML
+    public TableColumn nombreLista;
+    @FXML
+    public Button histSubastas;
+    @FXML
+    public Button histGanadas;
+
 
     private int userID;
     private File imagenSeleccionada;
@@ -94,6 +123,9 @@ public class ControllerUser implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         crearTask();
+        actualizar.setOnAction(event -> {
+            iniciar();
+        });
         /*Tab Subastar*/
         catPrimaria.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
         catPrimaria.setOnAction(event -> {
@@ -184,6 +216,52 @@ public class ControllerUser implements Initializable {
             }
         });
         /******************************************/
+        /*Tab Historial Usuarios*/
+        ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
+        listaUsuarios.setItems(FXCollections.observableArrayList(usuarios));
+        histSubastas.setOnAction(event -> {
+            Persona usuario = (Persona) listaUsuarios.getSelectionModel().getSelectedItem();
+            if(usuario == null)
+                GestorDB.gestor.invocarAlerta("Seleccione un usuario", Alert.AlertType.INFORMATION);
+            else {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    Parent root = loader.load(getClass().getResource("../View/subastas.fxml").openStream());
+                    Stage escenario = new Stage();
+                    ControllerSubastas c = loader.getController();
+                    c.revisando = usuario;
+                    c.configurarColumnas();
+                    c.iniciar("SELECT * FROM hist_subastas_usuario(?);");
+                    escenario.setTitle("Subastas Creadas para ID: " + usuario.getId());
+                    escenario.setScene(new Scene(root, 950, 400));
+                    escenario.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        histGanadas.setOnAction(event -> {
+            Persona usuario = (Persona) listaUsuarios.getSelectionModel().getSelectedItem();
+            if(usuario == null)
+                GestorDB.gestor.invocarAlerta("Seleccione un usuario", Alert.AlertType.INFORMATION);
+            else {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    Parent root = loader.load(getClass().getResource("../View/subastas.fxml").openStream());
+                    Stage escenario = new Stage();
+                    ControllerSubastas c = loader.getController();
+                    c.revisando = usuario;
+                    c.configurarColumnas();
+                    c.iniciar("SELECT * FROM hist_subastas_ganadas(?);");
+                    escenario.setTitle("Subastas Ganadas para ID: " + usuario.getId());
+                    escenario.setScene(new Scene(root, 950, 400));
+                    escenario.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        /*****************************************/
     }
 
     public void crearTask(){
@@ -243,6 +321,14 @@ public class ControllerUser implements Initializable {
         fechaVendiendo.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
         calificacion.setCellValueFactory(new PropertyValueFactory<Subastas, String>("calificacionUsuario"));
         aliasOfertante.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
+        idComprado.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
+        pujaComprado.setCellValueFactory(new PropertyValueFactory<Subastas, String>("monto"));
+        fechaComprado.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
+        calificacionVendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("calificacionUsuario"));
+        aliasVendedor.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
+        idUserLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
+        nombreLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
+        aliasLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
     }
 
     public void iniciar(){
@@ -250,7 +336,10 @@ public class ControllerUser implements Initializable {
         ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(0, false);
         listaSubastas.setItems(FXCollections.observableArrayList(s));
         s.clear();
-        s = GestorDB.gestor.get_subastas_usuario(this.userID);
+        s = GestorDB.gestor.get_subastas_usuario_ganadas(this.userID, false);
         tablaMisSubastas.setItems(FXCollections.observableArrayList(s));
+        s.clear();
+        s = GestorDB.gestor.get_subastas_usuario_ganadas(this.userID, true);
+        tablaMisCompras.setItems(FXCollections.observableArrayList(s));
     }
 }

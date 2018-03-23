@@ -93,6 +93,9 @@
                               <TableColumn fx:id="calificacion" prefWidth="171.0" text="Calificación Ofertante" />
                               <TableColumn fx:id="aliasOfertante" prefWidth="108.0" text="Ofertante" />
                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
                         </TableView>
                         <Button fx:id="actualizar" layoutX="258.0" layoutY="416.0" mnemonicParsing="false" text="Actualizar" />
                      </children>
@@ -101,18 +104,33 @@
             </Tab>
             <Tab text="Mis Compras">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tablaMisCompras" prefHeight="403.0" prefWidth="600.0">
+                           <columns>
+                              <TableColumn fx:id="idComprado" text="ID" />
+                              <TableColumn fx:id="pujaComprado" prefWidth="115.0" text="Monto Final" />
+                              <TableColumn fx:id="fechaComprado" prefWidth="125.0" text="Fecha Fin" />
+                              <TableColumn fx:id="calificacionVendedor" prefWidth="171.0" text="Calificación Vendedor" />
+                              <TableColumn fx:id="aliasVendedor" prefWidth="108.0" text="Vendedor" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Button fx:id="actualizarMisCompras" layoutX="258.0" layoutY="416.0" mnemonicParsing="false" text="Actualizar" />
+                     </children></AnchorPane>
               </content>
             </Tab>
-            <Tab text="Listas">
+            <Tab text="Historial Usuarios">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TitledPane animated="false" collapsible="false" layoutX="85.0" layoutY="88.0" prefHeight="286.0" prefWidth="431.0" text="Usuarios">
+                        <TitledPane animated="false" collapsible="false" prefHeight="469.0" prefWidth="600.0" text="Usuarios">
                            <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="172.0" prefWidth="333.0">
                                  <children>
-                                    <TableView fx:id="listaUsuarios" prefHeight="250.0" prefWidth="240.0">
+                                    <TableView fx:id="listaUsuarios" prefHeight="383.0" prefWidth="600.0">
                                        <columnResizePolicy>
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                        </columnResizePolicy>
@@ -122,8 +140,8 @@
                                           <TableColumn fx:id="nombreLista" prefWidth="75.0" text="Nombre" />
                                        </columns>
                                     </TableView>
-                                    <Button fx:id="histSubastas" layoutX="254.0" layoutY="14.0" mnemonicParsing="false" text="Historial Subastas" />
-                                    <Button fx:id="histGanadas" layoutX="254.0" layoutY="57.0" mnemonicParsing="false" text="Historial Ganadas" />
+                                    <Button fx:id="histSubastas" layoutX="14.0" layoutY="392.0" mnemonicParsing="false" text="Historial Subastas" />
+                                    <Button fx:id="histGanadas" layoutX="163.0" layoutY="392.0" mnemonicParsing="false" text="Historial Ganadas" />
                                  </children>
                               </AnchorPane>
                            </content>

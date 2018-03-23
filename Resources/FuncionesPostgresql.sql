@@ -307,7 +307,6 @@ DECLARE
   pujaActual FLOAT8;
   fk_puja_actual INTEGER;
 BEGIN
-
   SELECT CURRENT_TIMESTAMP INTO currentDate;
   SELECT s.fk_vendedor INTO vendedor FROM subastas s WHERE s.id = _inidsubasta;
   SELECT p.id INTO fk_puja_actual FROM subastas s INNER JOIN pujas p ON s.fk_puja_actual = p.id WHERE s.id = _inidsubasta;
@@ -321,10 +320,8 @@ BEGIN
     RETURN 0;
   ELSE
     IF (pujaActual + incrMin) < _inmonto THEN
-      WITH insrt AS
-      (INSERT INTO pujas (fk_comprador, monto, fecha, fk_subasta)
-      VALUES (_inIDcomprador, _inMonto :: NUMERIC :: MONEY, currentDate, _inIDsubasta) RETURNING id)
-      UPDATE subastas s SET s.fk_puja_actual = insrt.id WHERE s.id = _inidsubasta;
+      INSERT INTO pujas (fk_comprador, monto, fecha, fk_subasta)
+      VALUES (_inIDcomprador, _inMonto :: NUMERIC :: MONEY, currentDate, _inIDsubasta);
       RETURN 1;
     ELSE
       RETURN 0;
@@ -407,7 +404,7 @@ AS $$
 BEGIN
   RETURN QUERY SELECT
                  U.id,
-                 U.nombre,
+                 U.nombre || ' ' || U.apellido,
                  U.alias
                FROM usuarios U;
 END;
@@ -584,7 +581,14 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION hist_subastas_usuario(_inidvendedor INTEGER)
-  RETURNS TABLE(idsubasta INTEGER, inicial DOUBLE PRECISION, actual DOUBLE PRECISION, comentariovendedor TEXT, comentariocomprador TEXT, alias TEXT, fecha_fin TEXT)
+  RETURNS TABLE(
+    idsubasta INTEGER,
+    inicial DOUBLE PRECISION,
+    actual DOUBLE PRECISION,
+    comentariovendedor TEXT,
+    comentariocomprador TEXT,
+    alias TEXT,
+    fecha_fin TEXT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -833,5 +837,47 @@ CREATE OR REPLACE FUNCTION get_subastas_usuario(_inIDusuario INTEGER)
     WHERE s.fk_vendedor = _inIDusuario;
   END;
 $$;
+
+CREATE OR REPLACE FUNCTION get_subastas_ganadas(_inIDuser INTEGER)
+  RETURNS TABLE(
+    id INTEGER,
+    fechaFin TEXT,
+    montoFinal FLOAT8,
+    calificacion TEXT,
+    alias TEXT
+  )
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    RETURN QUERY
+      SELECT
+      s.id,
+      s.fecha_fin::TEXT,
+      p.monto :: NUMERIC :: FLOAT8,
+      u.calificacion :: TEXT,
+      u.alias
+      FROM subastas s
+      INNER JOIN pujas p ON s.fk_puja_actual = p.id
+      INNER JOIN usuarios u ON p.fk_comprador = _inIDuser;
+  END;
+$$;
+
+DROP TRIGGER actualiza_puja ON pujas;
+DROP FUNCTION  actualiza_puja();
+CREATE FUNCTION actualiza_puja()
+  RETURNS TRIGGER AS
+  $BODY$
+      BEGIN
+        UPDATE subastas SET fk_puja_actual = NEW.id WHERE id = NEW.fk_subasta;
+        RETURN NEW;
+      END;
+  $BODY$
+  LANGUAGE 'plpgsql';
+
+
+CREATE TRIGGER actualiza_puja AFTER INSERT
+  ON pujas
+  FOR EACH ROW EXECUTE PROCEDURE actualiza_puja();
+
 
 

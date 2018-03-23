@@ -504,8 +504,12 @@ public class GestorDB {
         return 0;
     }
 
-    public ArrayList get_subastas_usuario(int idUser){
-        String SQL = "SELECT * FROM get_subastas_usuario(?);";
+    public ArrayList get_subastas_usuario_ganadas(int idUser, boolean ganadas){
+        String SQL;
+        if(ganadas)
+            SQL = "SELECT * FROM get_subastas_ganadas(?);";
+        else
+            SQL = "SELECT * FROM get_subastas_usuario(?);";
         try {
             ArrayList<Subastas> subastas = new ArrayList<>();
             Subastas subasta;
