@@ -378,7 +378,7 @@ DECLARE
   _outIDinsertado INTEGER;
 BEGIN
   INSERT INTO usuarios (cedula, nombre, apellido, alias, password, direccion, correo, calificacion)
-  VALUES (_cedula, _nombre, _apellido, _alias, crypt(_password, gen_salt('bf')), _direccion, _correo, 0.0);
+  VALUES (_cedula, _nombre, _apellido, _alias, crypt(_password, gen_salt('bf')), _direccion, _correo, 5.0);
   SELECT id
   INTO _outIDinsertado
   FROM usuarios
@@ -423,8 +423,9 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION get_user_info(INTEGER);
 CREATE OR REPLACE FUNCTION get_user_info(_iniduser INTEGER)
-  RETURNS TABLE(id INTEGER, cedula TEXT, nombre TEXT, apellido TEXT, alias TEXT, direccion TEXT, correo TEXT)
+  RETURNS TABLE(id INTEGER, cedula TEXT, nombre TEXT, apellido TEXT, alias TEXT, direccion TEXT, correo TEXT, calificacion TEXT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -436,7 +437,8 @@ BEGIN
     U.apellido,
     U.alias,
     U.direccion,
-    U.correo
+    U.correo,
+    U.calificacion::TEXT
   FROM usuarios U
   WHERE U.id = _inIDuser;
 END;
@@ -470,6 +472,18 @@ BEGIN
   WHERE id = _inIDadmin;
 END;
 $$;
+
+DROP FUNCTION update_usuario(_id TEXT, _cedula TEXT, _nombre TEXT, _apellido TEXT, _alias TEXT, _direccion TEXT, _correo TEXT)
+CREATE FUNCTION update_usuario(_id INTEGER, _cedula TEXT, _nombre TEXT, _apellido TEXT, _alias TEXT, _direccion TEXT, _correo TEXT)
+  RETURNS void AS
+  $BODY$
+      BEGIN
+        UPDATE usuarios
+        SET cedula = _cedula, nombre = _nombre, apellido = _apellido, alias = _alias,
+          direccion = _direccion, correo = _correo WHERE id = _id;
+      END;
+  $BODY$
+  LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION read_categoria_primaria()
   RETURNS TABLE(categoria_primaria TEXT)
@@ -874,10 +888,18 @@ CREATE FUNCTION actualiza_puja()
   $BODY$
   LANGUAGE 'plpgsql';
 
-
 CREATE TRIGGER actualiza_puja AFTER INSERT
   ON pujas
   FOR EACH ROW EXECUTE PROCEDURE actualiza_puja();
 
-
-
+CREATE FUNCTION get_fk_vendedor(idSubasta INTEGER)
+  RETURNS INTEGER
+  LANGUAGE plpgsql
+  AS $$
+  DECLARE
+    outID INTEGER;
+  BEGIN
+    SELECT s.fk_vendedor INTO outID FROM subastas s WHERE s.id = idSubasta;
+    RETURN outID;
+  END;
+$$;

@@ -208,7 +208,8 @@ public class GestorDB {
                 String alias = rs.getString("alias");
                 String direccion = rs.getString("direccion");
                 String correo = rs.getString("correo");
-                user = new Usuario(_id, nombre, apellido, cedula, alias, correo, direccion);
+                String calificacion = rs.getString("calificacion");
+                user = new Usuario(_id, nombre, apellido, cedula, alias, correo, direccion, calificacion);
             }
             else{
                 invocarAlerta("Error al recuperar información", Alert.AlertType.ERROR);
@@ -248,6 +249,27 @@ public class GestorDB {
             pstmt.execute();
             pstmt.close();
             invocarAlerta("Datos de: " + String.valueOf(id) + " actualizados", Alert.AlertType.INFORMATION);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            invocarAlerta("Error al actualizar", Alert.AlertType.ERROR);
+        }
+    }
+
+    public void update_usuario(Usuario usuario){
+        String SQL = "SELECT * FROM update_usuario(?, ?, ?, ?, ?, ?, ?);";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, Integer.valueOf(usuario.getId()));
+            pstmt.setString(3, usuario.getNombre());
+            pstmt.setString(5, usuario.getAlias());
+            pstmt.setString(2, usuario.cedula);
+            pstmt.setString(4, usuario.apellido);
+            pstmt.setString(6, usuario.direccion);
+            pstmt.setString(7, usuario.correo);
+            pstmt.execute();
+            pstmt.close();
+            invocarAlerta("Datos de: " + usuario.getId() + " actualizados", Alert.AlertType.INFORMATION);
         }
         catch (SQLException e){
             e.printStackTrace();
@@ -531,6 +553,20 @@ public class GestorDB {
             invocarAlerta("Error al recuperar datos", Alert.AlertType.ERROR);
         }
         return null;
+    }
+
+    public int get_fk_vendedor(int idSubasta){
+        String SQL = "SELECT * FROM get_fk_vendedor(?);";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, idSubasta);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public File cargarImagen(ImageView imageView, InputStream imagen){

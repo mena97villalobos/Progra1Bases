@@ -5,6 +5,7 @@ import Model.Usuario;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import jdk.nashorn.internal.ir.GetSplitState;
 
 import javax.xml.soap.Text;
 import java.net.URL;
@@ -29,13 +30,16 @@ public class ControllerModificarUser implements Initializable {
     public TextArea direccion;
     @FXML
     public Button guardar;
+    @FXML
+    public TitledPane contrasena;
+    @FXML
+    public Label calificacion;
 
     public Usuario modificando;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         guardar.setOnAction(event -> {
-            //Revisar cambio de password
             if(!passActual.getText().equals("") && nuevoPass.getText().equals("")){
                 int id = GestorDB.gestor.validate_user(alias.getText(), passActual.getText(), false);
                 if(id != 0){
@@ -51,15 +55,27 @@ public class ControllerModificarUser implements Initializable {
             modificando.direccion = direccion.getText();
             modificando.cedula = cedula.getText();
             modificando.apellido = apellido.getText();
+            GestorDB.gestor.update_usuario(this.modificando);
         });
     }
 
-    public void cargarDatos(){
+    public void cargarDatos(boolean modificable){
+        if(!modificable){
+            guardar.setVisible(false);
+            contrasena.setVisible(false);
+            alias.setEditable(false);
+            nombre.setEditable(false);
+            apellido.setEditable(false);
+            cedula.setEditable(false);
+            correo.setEditable(false);
+            direccion.setEditable(false);
+        }
         alias.setText(modificando.getAlias());
         nombre.setText(modificando.getNombre());
         apellido.setText(modificando.apellido);
         cedula.setText(modificando.cedula);
         correo.setText(modificando.correo);
         direccion.setText(modificando.direccion);
+        calificacion.setText(modificando.calificacion);
     }
 }

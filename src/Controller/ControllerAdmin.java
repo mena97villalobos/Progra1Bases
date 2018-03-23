@@ -367,7 +367,7 @@ public class ControllerAdmin implements Initializable {
             Stage escenario = new Stage();
             ControllerModificarUser c = loader.getController();
             c.modificando = user;
-            c.cargarDatos();
+            c.cargarDatos(true);
             escenario.setTitle("Modificando ID: " + persona.getId());
             escenario.setScene(new Scene(root, 600, 300));
             escenario.show();
