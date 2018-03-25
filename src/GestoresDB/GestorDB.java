@@ -168,7 +168,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList read_users_admins(boolean admin){
+    public ArrayList<Persona> read_users_admins(boolean admin){
         String SQL;
         if(admin)
             SQL = "SELECT * FROM read_admins();";
@@ -277,7 +277,7 @@ public class GestorDB {
         }
     }
 
-    public ArrayList read_categoria_primaria(){
+    public ArrayList<String> read_categoria_primaria(){
         String SQL = "SELECT * FROM read_categoria_primaria()";
         try {
             ArrayList<String> arrayPersonas = new ArrayList<>();
@@ -295,7 +295,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList read_categoria_secundaria(String primaria){
+    public ArrayList<String> read_categoria_secundaria(String primaria){
         String SQL = "SELECT * FROM read_categoria_secundaria(?)";
         try {
             ArrayList<String> arrayPersonas = new ArrayList<>();
@@ -314,7 +314,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList read_subastas(String primaria, String secundaria, boolean filtro){
+    public ArrayList<Subastas> read_subastas(String primaria, String secundaria, boolean filtro){
         String SQL = "SELECT * FROM read_subastas(?, ?, ?);";
         try {
             ArrayList<Subastas> subastas = new ArrayList<>();
@@ -339,7 +339,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList hist_subastas(String idUser, String SQL){
+    public ArrayList<Subastas> hist_subastas(String idUser, String SQL){
         try {
             ArrayList<Subastas> subastas = new ArrayList<>();
             Subastas subasta;
@@ -365,7 +365,7 @@ public class GestorDB {
         return null;
     }
 
-    public ArrayList hist_pujas(String idSubasta){
+    public ArrayList<Pujas> hist_pujas(String idSubasta){
         String SQL = "SELECT * FROM historial_pujas(?);";
         try {
             ArrayList<Pujas> pujas = new ArrayList<>();
@@ -457,7 +457,7 @@ public class GestorDB {
         return 0;
     }
 
-    public ArrayList read_subastas_usuario(int idCategoria, boolean filtrar){
+    public ArrayList<Subastas> read_subastas_usuario(int idCategoria, boolean filtrar){
         String SQL = "SELECT * FROM read_subastas_usuario(?, ?);";
         try {
             ArrayList<Subastas> subastas = new ArrayList<>();
@@ -517,16 +517,16 @@ public class GestorDB {
             pstmt.setInt(2, idComprador);
             pstmt.setFloat(3, monto);
             ResultSet rs = pstmt.executeQuery();
-            invocarAlerta("Puja Enviada", Alert.AlertType.INFORMATION);
             if(rs.next())
                 return rs.getInt(1);
         } catch (SQLException e) {
+            invocarAlerta("Error al pujar", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
         return 0;
     }
 
-    public ArrayList get_subastas_usuario_ganadas(int idUser, boolean ganadas){
+    public ArrayList<Subastas> get_subastas_usuario_ganadas(int idUser, boolean ganadas){
         String SQL;
         if(ganadas)
             SQL = "SELECT * FROM get_subastas_ganadas(?);";
@@ -567,6 +567,23 @@ public class GestorDB {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public ArrayList<String> get_telefonos(int idUser){
+        String SQL = "SELECT * FROM get_tel_usuario(?);";
+        ArrayList<String> tel = new ArrayList<>();
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, idUser);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                tel.add(rs.getString(1));
+            }
+            return tel;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public File cargarImagen(ImageView imageView, InputStream imagen){

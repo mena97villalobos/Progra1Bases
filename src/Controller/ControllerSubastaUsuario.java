@@ -8,10 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -61,7 +58,13 @@ public class ControllerSubastaUsuario implements Initializable {
         pujar.setOnAction(event -> {
             float monto = Float.valueOf(puja.getText());
             int id = Integer.valueOf(revisando.getId());
-            GestorDB.gestor.pujar(id, idUsuario, monto);
+            int i = GestorDB.gestor.pujar(id, idUsuario, monto);
+            if(i != 0){
+                GestorDB.gestor.invocarAlerta("Puja Enviada", Alert.AlertType.INFORMATION);
+            }
+            else{
+                GestorDB.gestor.invocarAlerta("Puja Rechazada", Alert.AlertType.ERROR);
+            }
         });
         detallesVendedor.setOnAction(event -> {
             int fk_vendedor = GestorDB.gestor.get_fk_vendedor(Integer.valueOf(revisando.getId()));

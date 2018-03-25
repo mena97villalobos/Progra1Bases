@@ -81,6 +81,7 @@ CREATE TABLE subastas
     CONSTRAINT subastas_precio_inicial_check
     CHECK (precio_inicial > (0.0) :: MONEY),
   fecha_fin        TIMESTAMP                    NOT NULL,
+  abierta          BOOLEAN                      NOT NULL,
   detalles_entrega TEXT                         NOT NULL,
   vendido          BOOLEAN DEFAULT FALSE        NOT NULL,
   fk_comprador     INTEGER
@@ -153,6 +154,8 @@ CREATE TABLE aux2
   alias                TEXT,
   fecha_fin            TEXT
 );
+
+CREATE EXTENSION pgcrypto;
 
 CREATE OR REPLACE FUNCTION comprador_pujas(_inidpuja INTEGER)
   RETURNS TABLE(precio_inicial MONEY, oferta MONEY, comentario TEXT, calificacion REAL)
@@ -238,11 +241,19 @@ CREATE OR REPLACE FUNCTION crear_admin(_innombre TEXT, _inalias TEXT, _inpasswor
   RETURNS VOID
 LANGUAGE plpgsql
 AS $$
+DECLARE
+  incr MONEY;
+  perct REAL;
+  ima BYTEA;
 BEGIN
-  INSERT INTO public.administradores (nombre, alias, password) VALUES (
+  SELECT a.increment_min, a.percent_min, a.imagen_default INTO incr, perct, ima FROM administradores a LIMIT 1; --Copiar Variables del sistema
+  INSERT INTO public.administradores (nombre, alias, password, increment_min, percent_min, imagen_default) VALUES (
     _inNombre,
     _inAlias,
-    crypt(_inPassword, gen_salt('bf')) --encriptar password con blowfish algorithm
+    crypt(_inPassword, gen_salt('bf')), --encriptar password con blowfish algorithm
+    incr,
+    perct,
+    ima
   );
 END;
 $$;
@@ -270,8 +281,8 @@ DECLARE
   _outID INTEGER;
 BEGIN
   WITH insrt AS (
-  INSERT INTO subastas (fk_item, fk_vendedor, precio_inicial, fecha_fin, detalles_entrega, fk_puja_actual, fk_comprador, vendido)
-  VALUES (_inIDitem, _inIDvendedor, _inPrecioInicial :: FLOAT8 :: NUMERIC :: MONEY, _inFechaFin, _inDetEntrega, null, null, FALSE)
+  INSERT INTO subastas (fk_item, fk_vendedor, precio_inicial, fecha_fin, detalles_entrega, fk_puja_actual, fk_comprador, vendido, abierta)
+  VALUES (_inIDitem, _inIDvendedor, _inPrecioInicial :: FLOAT8 :: NUMERIC :: MONEY, _inFechaFin, _inDetEntrega, null, null, FALSE, TRUE)
   RETURNING id)
   SELECT id INTO _outID FROM insrt;
   RETURN _outID;
@@ -301,13 +312,13 @@ CREATE OR REPLACE FUNCTION crear_puja(_inidsubasta INTEGER, _inidcomprador INTEG
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  currentDate DATE;
   vendedor INTEGER;
   incrMin FLOAT8;
   pujaActual FLOAT8;
   fk_puja_actual INTEGER;
+  abierta BOOLEAN;
 BEGIN
-  SELECT CURRENT_TIMESTAMP INTO currentDate;
+  SELECT s.abierta INTO abierta FROM subastas s WHERE id = _inidsubasta;
   SELECT s.fk_vendedor INTO vendedor FROM subastas s WHERE s.id = _inidsubasta;
   SELECT p.id INTO fk_puja_actual FROM subastas s INNER JOIN pujas p ON s.fk_puja_actual = p.id WHERE s.id = _inidsubasta;
   SELECT a.increment_min :: NUMERIC :: FLOAT8 INTO incrMin FROM administradores a LIMIT 1;
@@ -318,10 +329,12 @@ BEGIN
   END IF;
   IF vendedor = _inidcomprador THEN
     RETURN 0;
+  ELSEIF NOT abierta THEN
+    RETURN 0;
   ELSE
     IF (pujaActual + incrMin) < _inmonto THEN
       INSERT INTO pujas (fk_comprador, monto, fecha, fk_subasta)
-      VALUES (_inIDcomprador, _inMonto :: NUMERIC :: MONEY, currentDate, _inIDsubasta);
+      VALUES (_inIDcomprador, _inMonto :: NUMERIC :: MONEY, CURRENT_TIMESTAMP, _inIDsubasta);
       RETURN 1;
     ELSE
       RETURN 0;
@@ -423,7 +436,6 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION get_user_info(INTEGER);
 CREATE OR REPLACE FUNCTION get_user_info(_iniduser INTEGER)
   RETURNS TABLE(id INTEGER, cedula TEXT, nombre TEXT, apellido TEXT, alias TEXT, direccion TEXT, correo TEXT, calificacion TEXT)
 LANGUAGE plpgsql
@@ -473,7 +485,6 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION update_usuario(_id TEXT, _cedula TEXT, _nombre TEXT, _apellido TEXT, _alias TEXT, _direccion TEXT, _correo TEXT)
 CREATE FUNCTION update_usuario(_id INTEGER, _cedula TEXT, _nombre TEXT, _apellido TEXT, _alias TEXT, _direccion TEXT, _correo TEXT)
   RETURNS void AS
   $BODY$
@@ -856,7 +867,7 @@ CREATE OR REPLACE FUNCTION get_subastas_ganadas(_inIDuser INTEGER)
   RETURNS TABLE(
     id INTEGER,
     fechaFin TEXT,
-    montoFinal FLOAT8,
+    montoActual FLOAT8,
     calificacion TEXT,
     alias TEXT
   )
@@ -870,14 +881,13 @@ CREATE OR REPLACE FUNCTION get_subastas_ganadas(_inIDuser INTEGER)
       p.monto :: NUMERIC :: FLOAT8,
       u.calificacion :: TEXT,
       u.alias
-      FROM subastas s
-      INNER JOIN pujas p ON s.fk_puja_actual = p.id
-      INNER JOIN usuarios u ON p.fk_comprador = _inIDuser;
+      FROM usuarios u
+      INNER JOIN pujas p ON u.id = p.fk_comprador
+      INNER JOIN subastas s ON p.id = s.fk_puja_actual
+      WHERE  u.id = _inIDuser;
   END;
 $$;
 
-DROP TRIGGER actualiza_puja ON pujas;
-DROP FUNCTION  actualiza_puja();
 CREATE FUNCTION actualiza_puja()
   RETURNS TRIGGER AS
   $BODY$
@@ -903,3 +913,14 @@ CREATE FUNCTION get_fk_vendedor(idSubasta INTEGER)
     RETURN outID;
   END;
 $$;
+
+CREATE OR REPLACE FUNCTION get_tel_usuario(_inIDuser INTEGER)
+  RETURNS TABLE(
+  tel TEXT
+  )
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    RETURN QUERY SELECT tu.telefono FROM telefono_usuario tu WHERE tu.fk_usuario = _inIDuser;
+  END;
+$$

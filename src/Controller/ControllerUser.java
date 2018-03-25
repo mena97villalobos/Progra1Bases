@@ -115,6 +115,23 @@ public class ControllerUser implements Initializable {
     public Button histSubastas;
     @FXML
     public Button histGanadas;
+    @FXML
+    public TableView listaSubastas1;
+    @FXML
+    public TableColumn idSubasta1;
+    @FXML
+    public TableColumn vendedor1;
+    @FXML
+    public TableColumn fechaFin1;
+    @FXML
+    public ComboBox catPrimaria2;
+    @FXML
+    public ComboBox catSecundaria2;
+    @FXML
+    public Button filtrar1;
+    @FXML
+    public Button mostrarPujas;
+
 
 
     private int userID;
@@ -122,7 +139,9 @@ public class ControllerUser implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        crearTask();
+        catPrimaria1.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
+        crearTask(crear, catPrimaria, catSecundaria);
+        crearTask(filtrar1, catPrimaria2, catSecundaria2);
         actualizar.setOnAction(event -> {
             iniciar();
         });
@@ -131,7 +150,7 @@ public class ControllerUser implements Initializable {
         catPrimaria.setOnAction(event -> {
             catSecundaria.setItems(FXCollections.observableArrayList(new ArrayList<String>()));
             catSecundaria.setDisable(true);
-            crearTask();
+            crearTask(crear, catPrimaria, catSecundaria);
         });
         cargarImagen.setOnAction(event -> {
             Stage actual = (Stage) cargarImagen.getScene().getWindow();
@@ -193,6 +212,12 @@ public class ControllerUser implements Initializable {
             int idCategoria = GestorDB.gestor.get_id_categoria(primariaSeleccionada, secundariaSeleccionada);
             ArrayList<Subastas> s = GestorDB.gestor.read_subastas_usuario(idCategoria, true);
             listaSubastas.setItems(FXCollections.observableArrayList(s));
+            catPrimaria1.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
+            catSecundaria1.setItems(FXCollections.observableArrayList(new ArrayList<>()));
+            catPrimaria1.getSelectionModel().clearSelection();
+            catPrimaria1.setDisable(false);
+            crearTaskTabComprar();
+
         });
         pujar.setOnAction(event -> {
             Subastas selectedItem = (Subastas) listaSubastas.getSelectionModel().getSelectedItem();
@@ -216,9 +241,45 @@ public class ControllerUser implements Initializable {
             }
         });
         /******************************************/
-        /*Tab Historial Usuarios*/
+        /*Tab Historial*/
         ArrayList<Persona> usuarios = GestorDB.gestor.read_users_admins(false);
         listaUsuarios.setItems(FXCollections.observableArrayList(usuarios));
+        ArrayList<Subastas> subastas = GestorDB.gestor.read_subastas("", "", false);
+        listaSubastas1.setItems(FXCollections.observableArrayList(subastas));
+        filtrar1.setOnAction(event -> {
+            crearTask(filtrar1, catPrimaria2, catSecundaria2);
+            String primariaSeleccionada = (String) catPrimaria2.getSelectionModel().getSelectedItem();
+            String secundariaSeleccionada = (String) catSecundaria2.getSelectionModel().getSelectedItem();
+            ArrayList<Subastas> s = GestorDB.gestor.read_subastas(primariaSeleccionada, secundariaSeleccionada, true);
+            listaSubastas1.setItems(FXCollections.observableArrayList(s));
+            catPrimaria2.getSelectionModel().clearSelection();
+            catSecundaria2.setItems(FXCollections.observableArrayList(new ArrayList<String>()));
+            //Esto va al final para limpiar
+            catPrimaria2.setDisable(false);
+            filtrar1.setDisable(true);
+            catSecundaria2.setDisable(true);
+        });
+        mostrarPujas.setOnAction(event -> {
+            Subastas s = (Subastas) listaSubastas1.getSelectionModel().getSelectedItem();
+            if(s == null)
+                GestorDB.gestor.invocarAlerta("Seleccione una subasta", Alert.AlertType.INFORMATION);
+            else {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    Parent root = loader.load(getClass().getResource("../View/pujas.fxml").openStream());
+                    Stage escenario = new Stage();
+                    ControllerPujas c = loader.getController();
+                    c.configurarColumnas();
+                    c.actual = s;
+                    c.iniciar();
+                    escenario.setTitle("Pujas para ID: " + s.getId());
+                    escenario.setScene(new Scene(root, 600, 400));
+                    escenario.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         histSubastas.setOnAction(event -> {
             Persona usuario = (Persona) listaUsuarios.getSelectionModel().getSelectedItem();
             if(usuario == null)
@@ -264,19 +325,19 @@ public class ControllerUser implements Initializable {
         /*****************************************/
     }
 
-    public void crearTask(){
+    public void crearTask(Button b, ComboBox p, ComboBox s){
         //Thread para dejar bloqueado categoria secundaria y el boton de filtrar
         Task task = new Task() {
             @Override
             protected Void call() {
-                while(catPrimaria.getSelectionModel().isEmpty()){}
-                catSecundaria.setDisable(false);
-                String primariaSeleccionada = (String) catPrimaria.getSelectionModel().getSelectedItem();
+                while(p.getSelectionModel().isEmpty()){}
+                s.setDisable(false);
+                String primariaSeleccionada = (String) p.getSelectionModel().getSelectedItem();
                 ArrayList<String> secundarias = GestorDB.gestor.read_categoria_secundaria(primariaSeleccionada);
-                catSecundaria.setItems(FXCollections.observableArrayList(secundarias));
-                while(catSecundaria.getSelectionModel().isEmpty()){}
+                s.setItems(FXCollections.observableArrayList(secundarias));
+                while(s.getSelectionModel().isEmpty()){}
                 System.out.println("Secundaria Seleccionada");
-                crearSubasta.setDisable(false);
+                b.setDisable(false); //crearSubasta
                 return null;
             }
         };
@@ -288,7 +349,6 @@ public class ControllerUser implements Initializable {
         Task task = new Task() {
             @Override
             protected Void call() {
-                catPrimaria1.setItems(FXCollections.observableArrayList(GestorDB.gestor.read_categoria_primaria()));
                 catSecundaria1.setDisable(true);
                 filtrar.setDisable(true);
                 while(catPrimaria1.getSelectionModel().isEmpty()){}
@@ -329,6 +389,9 @@ public class ControllerUser implements Initializable {
         idUserLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("id"));
         nombreLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("nombre"));
         aliasLista.setCellValueFactory(new PropertyValueFactory<Persona, String>("alias"));
+        idSubasta1.setCellValueFactory(new PropertyValueFactory<Subastas, String>("id"));
+        vendedor1.setCellValueFactory(new PropertyValueFactory<Subastas, String>("vendedor"));
+        fechaFin1.setCellValueFactory(new PropertyValueFactory<Subastas, String>("fechaFin"));
     }
 
     public void iniciar(){

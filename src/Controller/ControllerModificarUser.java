@@ -2,6 +2,7 @@ package Controller;
 
 import GestoresDB.GestorDB;
 import Model.Usuario;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -9,6 +10,7 @@ import jdk.nashorn.internal.ir.GetSplitState;
 
 import javax.xml.soap.Text;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ControllerModificarUser implements Initializable {
@@ -34,6 +36,12 @@ public class ControllerModificarUser implements Initializable {
     public TitledPane contrasena;
     @FXML
     public Label calificacion;
+    @FXML
+    public Button addCel;
+    @FXML
+    public TextField celAdd;
+    @FXML
+    public ComboBox celRegister;
 
     public Usuario modificando;
 
@@ -56,6 +64,18 @@ public class ControllerModificarUser implements Initializable {
             modificando.cedula = cedula.getText();
             modificando.apellido = apellido.getText();
             GestorDB.gestor.update_usuario(this.modificando);
+            ArrayList<String> aux = new ArrayList<>(celRegister.getItems());
+            aux.removeAll(modificando.telefonos);
+            for (String s : aux) {
+                GestorDB.gestor.crear_telefono(Integer.parseInt(modificando.getId()), s);
+            }
+        });
+        addCel.setOnAction(event -> {
+            String tel = celAdd.getText();
+            ArrayList<String> aux = new ArrayList<>(celRegister.getItems());
+            aux.add(tel);
+            celRegister.setItems(FXCollections.observableArrayList(aux));
+            celAdd.clear();
         });
     }
 
@@ -77,5 +97,6 @@ public class ControllerModificarUser implements Initializable {
         correo.setText(modificando.correo);
         direccion.setText(modificando.direccion);
         calificacion.setText(modificando.calificacion);
+        celRegister.setItems(FXCollections.observableArrayList(modificando.telefonos));
     }
 }

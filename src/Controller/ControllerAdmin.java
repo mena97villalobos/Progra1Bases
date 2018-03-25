@@ -214,10 +214,15 @@ public class ControllerAdmin implements Initializable {
 
         });
         load.setOnAction(event -> {
-            VariablesSistema vs = GestorDB.gestor.read_variables();
-            inc.setText(Float.toString(vs.inc));
-            percent.setText(Float.toString(vs.percent));
-            imagenActual = GestorDB.gestor.cargarImagen(imagenDef, vs.imagen);
+            try {
+                VariablesSistema vs = GestorDB.gestor.read_variables();
+                inc.setText(Float.toString(vs.inc));
+                percent.setText(Float.toString(vs.percent));
+                imagenActual = GestorDB.gestor.cargarImagen(imagenDef, vs.imagen);
+            }
+            catch (Exception e){
+                GestorDB.gestor.invocarAlerta("Sin variables del sistema", Alert.AlertType.ERROR);
+            }
         });
         load.fire();
         /****************************/
