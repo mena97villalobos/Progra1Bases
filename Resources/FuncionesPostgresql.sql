@@ -157,58 +157,6 @@ CREATE TABLE aux2
 
 CREATE EXTENSION pgcrypto;
 
-CREATE OR REPLACE FUNCTION comprador_pujas(_inidpuja INTEGER)
-  RETURNS TABLE(precio_inicial MONEY, oferta MONEY, comentario TEXT, calificacion REAL)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  idUsurio    NUMERIC;
-  currentDate TIMESTAMP;
-BEGIN
-  SELECT fk_comprador
-  INTO idUsurio
-  FROM public.pujas
-  WHERE id = _inIDpuja;
-  SELECT CURRENT_DATE
-  INTO currentDate;
-  RETURN QUERY SELECT
-                 S.precio_inicial,
-                 P.monto,
-                 C.comentario,
-                 C.calificacion
-               FROM public.subastas S
-                 INNER JOIN public.pujas P ON S.fk_puja_actual = P.id
-                 INNER JOIN public.comentarios_subastas C ON C.fk_subasta = S.id
-               WHERE S.fk_comprador = idUsurio AND S.fecha_fin >= currentDate AND S.vendido AND (NOT C.tipo);
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION vendedor_subastas(_inidsubasta INTEGER)
-  RETURNS TABLE(precio_inicial MONEY, oferta MONEY, comentario TEXT, calificacion REAL)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  idVendedor  NUMERIC;
-  currentDate TIMESTAMP;
-BEGIN
-  SELECT fk_vendedor
-  INTO idVendedor
-  FROM subastas
-  WHERE id = _inIDsubasta;
-  SELECT CURRENT_DATE
-  INTO currentDate;
-  RETURN QUERY SELECT
-                 S.precio_inicial,
-                 P.monto,
-                 C.comentario,
-                 C.calificacion
-               FROM public.subastas S
-                 INNER JOIN public.pujas P ON S.fk_puja_actual = P.id
-                 INNER JOIN public.comentarios_subastas C ON C.fk_subasta = S.id
-               WHERE S.fk_vendedor = idVendedor AND S.fecha_fin >= currentDate AND S.vendido AND C.tipo;
-END;
-$$;
-
 CREATE OR REPLACE FUNCTION insertar_comentario(_inidsubasta    INTEGER, _inidusuario INTEGER, _incomentario TEXT,
                                                _incalificacion REAL, _intipo BOOLEAN)
   RETURNS VOID
@@ -286,24 +234,6 @@ BEGIN
   RETURNING id)
   SELECT id INTO _outID FROM insrt;
   RETURN _outID;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION listar_subastas(_inidcategoria INTEGER)
-  RETURNS TABLE(descripcion TEXT, precio_inicial MONEY, puja_actual MONEY, fecha_fin DATE)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  RETURN QUERY SELECT
-                 I.descripcion,
-                 S.precio_inicial,
-                 P.monto,
-                 S.fecha_fin
-               FROM items I
-                 INNER JOIN subastas S ON I.id = S.fk_item
-                 INNER JOIN pujas P ON S.fk_puja_actual = P.id
-               WHERE fk_categoria = _inIDcategoria
-               ORDER BY S.fecha_fin DESC;
 END;
 $$;
 
@@ -516,19 +446,6 @@ BEGIN
                FROM categoria_secundaria s
                  INNER JOIN categoria_primaria primaria ON s.fk_categoria_primaria = primaria.id
                WHERE primaria.nombre = _inNombrePrimaria;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION read_categorias()
-  RETURNS TABLE(categoria_primaria TEXT, categoria_secundaria TEXT)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  RETURN QUERY SELECT
-                 P.nombre,
-                 S.nombre
-               FROM categoria_primaria P
-                 INNER JOIN categoria_secundaria S ON P.id = S.fk_categoria_primaria;
 END;
 $$;
 
@@ -923,4 +840,107 @@ CREATE OR REPLACE FUNCTION get_tel_usuario(_inIDuser INTEGER)
   BEGIN
     RETURN QUERY SELECT tu.telefono FROM telefono_usuario tu WHERE tu.fk_usuario = _inIDuser;
   END;
-$$
+$$;
+
+CREATE ROLE iniciar_sesion WITH ENCRYPTED PASSWORD '9545';
+GRANT EXECUTE ON FUNCTION validar_admin(TEXT, TEXT) TO iniciar_sesion;
+GRANT EXECUTE ON FUNCTION validar_user(TEXT, TEXT) TO iniciar_sesion;
+GRANT SELECT ON administradores TO iniciar_sesion;
+GRANT SELECT ON usuarios TO iniciar_sesion;
+
+CREATE ROLE admin WITH ENCRYPTED PASSWORD '9545';
+ALTER ROLE admin WITH LOGIN;
+GRANT EXECUTE ON FUNCTION
+  crear_admin(TEXT, TEXT, TEXT),
+  crear_item(TEXT, INTEGER, BYTEA),
+  crear_telefono(INTEGER, TEXT),
+  create_user(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT),
+  get_id_categoria(TEXT, TEXT),
+  get_tel_usuario(INTEGER),
+  get_user_info(INTEGER),
+  hist_subastas_ganadas(INTEGER),
+  hist_subastas_usuario(INTEGER),
+  historial_pujas(INTEGER),
+  read_admins(),
+  read_categoria_primaria(),
+  read_categoria_secundaria(TEXT),
+  read_subastas(TEXT, TEXT, BOOLEAN),
+  read_subastas_usuario(INTEGER, BOOLEAN),
+  read_users(),
+  read_variables(),
+  update_usuario(INTEGER, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT),
+  update_admin(INTEGER, TEXT, TEXT),
+  update_password(INTEGER, TEXT, BOOLEAN),
+  update_variables(REAL, REAL, BYTEA)
+TO admin;
+GRANT SELECT ON TABLE
+  administradores,
+  aux,
+  aux2,
+  categoria_primaria,
+  categoria_secundaria,
+  comentarios_subastas,
+  items,
+  pujas,
+  subastas,
+  telefono_usuario,
+  usuarios
+TO admin;
+GRANT INSERT ON TABLE
+  administradores,
+  aux,
+  aux2,
+  telefono_usuario,
+  usuarios
+TO admin;
+GRANT UPDATE ON TABLE
+  telefono_usuario,
+  usuarios,
+  administradores
+TO admin;
+
+CREATE ROLE usuario WITH ENCRYPTED PASSWORD '9545';
+ALTER ROLE usuario WITH LOGIN;
+GRANT EXECUTE ON FUNCTION
+  read_categoria_primaria(),
+  read_categoria_secundaria(TEXT),
+  read_subastas(TEXT, TEXT, BOOLEAN),
+  read_subasta_item(INTEGER),
+  read_subastas_usuario(INTEGER, BOOLEAN),
+  read_users(),
+  read_variables(),
+  get_id_categoria(TEXT, TEXT),
+  get_tel_usuario(INTEGER),
+  get_fk_vendedor(INTEGER),
+  get_subastas_ganadas(INTEGER),
+  get_subastas_usuario(INTEGER),
+  get_user_info(INTEGER),
+  hist_subastas_ganadas(INTEGER),
+  hist_subastas_usuario(INTEGER),
+  historial_pujas(INTEGER),
+  insertar_comentario(INTEGER, INTEGER, TEXT, REAL, BOOLEAN),
+  crear_item(TEXT, INTEGER, BYTEA),
+  crear_puja(INTEGER, INTEGER, FLOAT8),
+  crear_subasta(INTEGER, INTEGER, REAL, TIMESTAMP, TEXT)
+TO usuario;
+GRANT SELECT ON TABLE
+administradores,
+  aux,
+  aux2,
+  categoria_primaria,
+  categoria_secundaria,
+  comentarios_subastas,
+  items,
+  pujas,
+  subastas,
+  telefono_usuario,
+  usuarios
+TO usuario;
+GRANT INSERT, UPDATE ON TABLE
+  comentarios_subastas,
+  items,
+  pujas,
+  subastas,
+  aux,
+  aux2
+TO usuario;

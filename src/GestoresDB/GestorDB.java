@@ -19,9 +19,8 @@ public class GestorDB {
 
     public GestorDB(String connectionString, String user, String password) {
         this.url = connectionString;
-        //TODO Cambiar usuarios
-        this.user = "postgres";
-        this.password = "9545";
+        this.user = user;
+        this.password = password;
     }
 
     public Connection connect() {
@@ -29,6 +28,7 @@ public class GestorDB {
         try {
             conn = DriverManager.getConnection(url, user, password);
             System.out.println("Connected to the PostgreSQL server successfully.");
+            System.out.println("Connected as: " + user);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -53,11 +53,12 @@ public class GestorDB {
             pstmt.close();
             connection.close();
             if(idUser != 0) {
+                connection.close();
                 if (admin) {
-                    this.user = "postgres";
+                    this.user = "admin";
                     connection = connect();
                 } else {
-                    this.user = "postgres";
+                    this.user = "usuario";
                     connection = connect();
                 }
             }
