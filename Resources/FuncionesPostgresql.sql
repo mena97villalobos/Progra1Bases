@@ -217,6 +217,10 @@ BEGIN
   (INSERT INTO items (descripcion, fk_categoria, imagen) VALUES (_inDescripcion, _inIDcategoria, _inImagen) RETURNING id)
   SELECT id INTO _outID FROM insrt;
   RETURN _outID;
+  EXCEPTION
+  WHEN transaction_rollback THEN
+    RAISE EXCEPTION 'rollback' USING errcode = '40000';
+    RETURN 0;
 END;
 $$;
 
@@ -523,7 +527,7 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION hist_subastas_usuario(_inidvendedor INTEGER)
-  RETURNS TABLE(
+  RETURNS TABLE (
     idsubasta INTEGER,
     inicial DOUBLE PRECISION,
     actual DOUBLE PRECISION,
@@ -531,144 +535,55 @@ CREATE OR REPLACE FUNCTION hist_subastas_usuario(_inidvendedor INTEGER)
     comentariocomprador TEXT,
     alias TEXT,
     fecha_fin TEXT)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    recCursor CURSOR FOR
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    RETURN QUERY
     SELECT
-      s.id,
-      s.precio_inicial,
-      s.fk_puja_actual,
-      s.fecha_fin :: TEXT,
-      u.alias
+        s.id AS idsubasta,
+        s.precio_inicial :: NUMERIC :: FLOAT8 AS inicial,
+        (CASE WHEN s.fk_puja_actual NOTNULL THEN (SELECT p.monto :: NUMERIC :: FLOAT8 FROM pujas p WHERE p.id = s.fk_puja_actual) ELSE  0.0 :: NUMERIC :: FLOAT8 END) AS actual,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) ELSE '' END) AS comentariovendedor,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) ELSE '' END) AS comentariocomprador,
+        (CASE WHEN s.fk_comprador NOTNULL  THEN (SELECT u.alias FROM usuarios u WHERE u.id = s.fk_comprador) ELSE '' END) AS alias,
+        s.fecha_fin :: TEXT AS fecha_fin
     FROM
       usuarios u INNER JOIN subastas s ON u.id = s.fk_vendedor
-    WHERE u.id = _inIDvendedor;
-  _montoActual MONEY;
-  _comentario1 TEXT;
-  _comentario2 TEXT;
-  rec          aux%ROWTYPE;
-BEGIN
-  OPEN recCursor;
-  DELETE FROM aux2;
-  LOOP
-    FETCH recCursor INTO rec;
-    IF NOT FOUND
-    THEN
-      EXIT;
-    END IF;
-    SELECT ''
-    INTO _comentario1;
-    SELECT ''
-    INTO _comentario2;
-    IF rec.fk_puja_actual NOTNULL
-    THEN
-      --Seleccionar el monto actual de la puja si es que existe
-      SELECT p2.monto
-      INTO _montoActual
-      FROM (SELECT monto
-            FROM pujas p
-            WHERE ID = rec.fk_puja_actual) AS p2;
-    ELSE
-      SELECT 0.0 :: FLOAT8 :: NUMERIC :: MONEY
-      INTO _montoActual; --Poner la puja actual en 0.0
-    END IF;
-    --Seleccionar el comentario del Vendedor al Comprador
-    SELECT comentario
-    INTO _comentario1
-    FROM comentarios_subastas
-    WHERE fk_subasta = rec.id AND tipo
-    LIMIT 1;
-    --Seleccionar el comentario del Comprador al Vendedor
-    SELECT comentario
-    INTO _comentario2
-    FROM comentarios_subastas
-    WHERE fk_subasta = rec.id AND NOT tipo
-    LIMIT 1;
-    INSERT INTO aux2 VALUES (rec.id, rec.precio, _montoActual, _comentario1, _comentario2, rec.fecha_fin, rec.alias);
-  END LOOP;
-  RETURN QUERY
-  SELECT
-    a2.id,
-    a2.precio_inicial :: NUMERIC :: FLOAT8,
-    a2.precio_actual :: NUMERIC :: FLOAT8,
-    a2.cometario_vendedor,
-    a2.comentario_comprador,
-    a2.alias,
-    a2.fecha_fin
-  FROM aux2 a2;
-END;
+    WHERE u.id = _inidvendedor;
+    END;
 $$;
 
+SELECT * FROM hist_subastas_usuario(6);
+
 CREATE OR REPLACE FUNCTION hist_subastas_ganadas(_inidcomprador INTEGER)
-  RETURNS TABLE(idsubasta INTEGER, inicial DOUBLE PRECISION, actual DOUBLE PRECISION, comentariovendedor TEXT, comentariocomprador TEXT, alias TEXT, fecha_fin TEXT)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    recCursor CURSOR FOR
+  RETURNS TABLE (
+    idsubasta INTEGER,
+    inicial DOUBLE PRECISION,
+    actual DOUBLE PRECISION,
+    comentariovendedor TEXT,
+    comentariocomprador TEXT,
+    alias TEXT,
+    fecha_fin TEXT)
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    RETURN QUERY
     SELECT
-      s.id,
-      s.precio_inicial,
-      s.fk_puja_actual,
-      s.fecha_fin :: TEXT,
-      u.alias
+        s.id AS idsubasta,
+        s.precio_inicial :: NUMERIC :: FLOAT8 AS inicial,
+        (CASE WHEN s.fk_puja_actual NOTNULL THEN (SELECT p.monto :: NUMERIC :: FLOAT8 FROM pujas p WHERE p.id = s.fk_puja_actual) ELSE  0.0 :: NUMERIC :: FLOAT8 END) AS actual,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) ELSE '' END) AS comentariovendedor,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) ELSE '' END) AS comentariocomprador,
+        (CASE WHEN s.fk_vendedor NOTNULL  THEN (SELECT u.alias FROM usuarios u WHERE u.id = s.fk_vendedor) ELSE '' END) AS alias,
+        s.fecha_fin :: TEXT AS fecha_fin
     FROM
       usuarios u INNER JOIN subastas s ON u.id = s.fk_comprador
-    WHERE u.id = _inIDComprador;
-  _montoActual MONEY;
-  _comentario1 TEXT;
-  _comentario2 TEXT;
-  rec          aux%ROWTYPE;
-BEGIN
-  OPEN recCursor;
-  DELETE FROM aux2;
-  LOOP
-    FETCH recCursor INTO rec;
-    IF NOT FOUND
-    THEN
-      EXIT;
-    END IF;
-    SELECT ''
-    INTO _comentario1;
-    SELECT ''
-    INTO _comentario2;
-    IF rec.fk_puja_actual NOTNULL
-    THEN
-      --Seleccionar el monto actual de la puja si es que existe
-      SELECT p2.monto
-      INTO _montoActual
-      FROM (SELECT monto
-            FROM pujas p
-            WHERE ID = rec.fk_puja_actual) AS p2;
-    ELSE
-      SELECT 0.0 :: FLOAT8 :: NUMERIC :: MONEY
-      INTO _montoActual; --Poner la puja actual en 0.0
-    END IF;
-    --Seleccionar el comentario del Vendedor al Comprador
-    SELECT comentario
-    INTO _comentario1
-    FROM comentarios_subastas
-    WHERE fk_subasta = rec.id AND tipo
-    LIMIT 1;
-    --Seleccionar el comentario del Comprador al Vendedor
-    SELECT comentario
-    INTO _comentario2
-    FROM comentarios_subastas
-    WHERE fk_subasta = rec.id AND NOT tipo
-    LIMIT 1;
-    INSERT INTO aux2 VALUES (rec.id, rec.precio, _montoActual, _comentario1, _comentario2, rec.fecha_fin, rec.alias);
-  END LOOP;
-  RETURN QUERY
-  SELECT
-    a2.id,
-    a2.precio_inicial :: NUMERIC :: FLOAT8,
-    a2.precio_actual :: NUMERIC :: FLOAT8,
-    a2.cometario_vendedor,
-    a2.comentario_comprador,
-    a2.alias,
-    a2.fecha_fin
-  FROM aux2 a2;
-END;
+    WHERE u.id = _inidcomprador;
+    END;
 $$;
 
 CREATE OR REPLACE FUNCTION get_id_categoria(_inprimaria TEXT, _insecundaria TEXT)
@@ -734,6 +649,7 @@ CREATE OR REPLACE FUNCTION read_subasta_item(_inIDsubasta INTEGER)
     _outIncrMin FLOAT8;
     _pujaActual INTEGER;
   BEGIN
+    SELECT a.increment_min:: NUMERIC :: FLOAT8 INTO _outIncrMin FROM administradores a WHERE a.id = 1;
     SELECT s.id, s.detalles_entrega, i.descripcion, i.imagen, s.fecha_fin, u.alias, s.fk_puja_actual
     INTO _outID, _outDetallesEntrega, _outDescrItem, _outImagen, _outFechaFin, _outAlias, _pujaActual
     FROM subastas s
@@ -747,13 +663,13 @@ CREATE OR REPLACE FUNCTION read_subasta_item(_inIDsubasta INTEGER)
       WHERE s.id = _inIDsubasta;
     ELSE
       SELECT s.precio_inicial:: NUMERIC :: FLOAT8 INTO _outPujaActual FROM subastas s WHERE s.id = _inIDsubasta;
-    SELECT a.increment_min:: NUMERIC :: FLOAT8 INTO _outIncrMin FROM administradores a LIMIT 1;
     END IF;
-
     RETURN QUERY
     SELECT _outID, _outAlias, _outPujaActual, _outDetallesEntrega, _outDescrItem, _outImagen, _outFechaFin, _outIncrMin;
   END;
 $$;
+
+SELECT a.increment_min:: NUMERIC :: FLOAT8 FROM administradores a WHERE a.id = 1;
 
 CREATE OR REPLACE FUNCTION get_subastas_usuario(_inIDusuario INTEGER)
   RETURNS TABLE(
@@ -793,15 +709,15 @@ CREATE OR REPLACE FUNCTION get_subastas_ganadas(_inIDuser INTEGER)
   BEGIN
     RETURN QUERY
       SELECT
-      s.id,
-      s.fecha_fin::TEXT,
-      p.monto :: NUMERIC :: FLOAT8,
-      u.calificacion :: TEXT,
-      u.alias
-      FROM usuarios u
-      INNER JOIN pujas p ON u.id = p.fk_comprador
-      INNER JOIN subastas s ON p.id = s.fk_puja_actual
-      WHERE  u.id = _inIDuser;
+        s.id,
+        s.fecha_fin::TEXT,
+        p.monto::NUMERIC::FLOAT8,
+        u.calificacion::TEXT,
+        u.alias
+      FROM subastas s
+      INNER JOIN pujas p ON s.fk_puja_actual = p.id
+      INNER JOIN usuarios u ON s.fk_vendedor = u.id
+      WHERE s.fk_comprador = _inIDuser;
   END;
 $$;
 
@@ -893,6 +809,11 @@ GRANT INSERT ON TABLE
   telefono_usuario,
   usuarios
 TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE
+  administradores_id_seq,
+  telefono_usuario_id_seq,
+  usuarios_id_seq
+TO admin;
 GRANT UPDATE ON TABLE
   telefono_usuario,
   usuarios,
@@ -944,3 +865,79 @@ GRANT INSERT, UPDATE ON TABLE
   aux,
   aux2
 TO usuario;
+GRANT ALL PRIVILEGES ON SEQUENCE
+  comentarios_subastas_id_seq,
+  items_id_seq,
+  pujas_id_seq,
+  subastas_id_seq
+TO usuario;
+GRANT DELETE ON TABLE
+  aux,
+  aux2
+TO usuario, admin;
+
+CREATE OR REPLACE FUNCTION calendarizador()
+  RETURNS VOID
+  LANGUAGE plpgsql
+  AS $$
+  DECLARE
+	contador INTEGER := 1;
+	maxKey INTEGER;
+  pujaActual INTEGER := NULL;
+  fkComprador INTEGER;
+BEGIN
+	SELECT MAX(s.id) INTO maxKey FROM subastas s;
+	UPDATE subastas SET abierta = FALSE WHERE fecha_fin <= CURRENT_TIMESTAMP;
+	UPDATE subastas SET vendido = TRUE WHERE fk_puja_actual NOTNULL;
+	LOOP
+	EXIT WHEN contador > maxKey;
+    SELECT s.fk_puja_actual INTO pujaActual FROM subastas s WHERE s.id = contador;
+		IF pujaActual NOTNULL THEN
+      SELECT p.fk_comprador INTO fkComprador FROM pujas p WHERE p.id = pujaActual;
+      UPDATE subastas SET fk_comprador = fkComprador WHERE id = contador;
+    END IF;
+	  contador := contador+1;
+  END LOOP;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION pruebas(_inID INTEGER)
+  RETURNS TABLE (
+    idsubasta INTEGER,
+    inicial DOUBLE PRECISION,
+    actual DOUBLE PRECISION,
+    comentariovendedor TEXT,
+    comentariocomprador TEXT,
+    alias TEXT,
+    fecha_fin TEXT)
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+    RETURN QUERY
+    SELECT
+        s.id AS idsubasta,
+        s.precio_inicial :: NUMERIC :: FLOAT8 AS inicial,
+        (CASE WHEN s.fk_puja_actual NOTNULL THEN (SELECT p.monto :: NUMERIC :: FLOAT8 FROM pujas p WHERE p.id = s.fk_puja_actual) ELSE  0.0 :: NUMERIC :: FLOAT8 END) AS actual,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND cs.tipo) ELSE '' END) AS comentariovendedor,
+        (CASE WHEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) NOTNULL
+          THEN (SELECT comentario FROM comentarios_subastas cs WHERE cs.fk_subasta = s.id AND NOT cs.tipo) ELSE '' END) AS comentariocomprador,
+       u.alias AS alias,--comprador
+      s.fecha_fin :: TEXT AS fecha_fin
+    FROM
+      usuarios u INNER JOIN subastas s ON u.id = s.fk_comprador
+    WHERE u.id = _inID;
+    END;
+$$;
+
+CREATE OR REPLACE FUNCTION get_alias(user_id INTEGER)
+  RETURNS TEXT
+  LANGUAGE plpgsql
+  AS $$
+    DECLARE
+      alias_return TEXT;
+    BEGIN
+      SELECT u.alias INTO alias_return FROM usuarios u WHERE u.id = user_id;
+      RETURN alias_return;
+    END;
+$$;

@@ -1,0 +1,334 @@
+{% extends 'usuario/layout.html'%}
+{%block content%} 
+    <h1>Bienvenido {{alias}}</h1> 
+    <div>
+    {% load static %}
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#comprar" aria-controls="home" role="tab" data-toggle="tab">Comprar</a></li>
+    <li role="presentation"><a href="#vender" aria-controls="profile" role="tab" data-toggle="tab">Subastar</a></li>
+    <li role="presentation"><a href="#misSubastas" aria-controls="messages" role="tab" data-toggle="tab">Mis Subastas</a></li>
+    <li role="presentation"><a href="#misCompras" aria-controls="settings" role="tab" data-toggle="tab">Mis Compras</a></li>
+    <li role="presentation"><a href="#otrosUsuarios" aria-controls="settings" role="tab" data-toggle="tab">Otros Usuarios</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="comprar">
+        {% for s in subastas%}
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headings{{s.0}}">
+                        <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{s.0}}" aria-expanded="true" aria-controls="collapse{{s.0}}">
+                            ID: {{s.0}} || Detalles Item: {{s.4}} || Vendedor: {{s.1}} || Fecha Cierre: {{s.6}}
+                        </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{s.0}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{s.0}}">
+                        <div class="panel-body">
+                            <div style="padding:10px"> <img src="data:image/png;base64,{{s.5}}"> </div>
+
+                            <div style="padding:10px">Precio: {{s.2}}</div>
+
+                            <div style="padding:10px">Detalles Entrega: {{s.3}}</div>
+                            
+                            <div style="padding:10px">Incremento Minimo de Puja: {{s.7}}</div>
+
+                            <form method="POST" action="/pujar/{{s.0}}">
+                                {% csrf_token %}
+                                <div>
+                                    <div style="padding:10px">
+                                        {% if messages %}
+                                        <ul class="messages">
+                                            {% for message in messages %}
+                                            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}> {{ message }} </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                    </div>
+                                    <div style="padding:10px">
+                                         <input type="text" class="form-control" name="montoPuja{{s.0}}" placeholder="Monto">
+                                    </div>
+                                    <div style="padding:10px">
+                                        <input type="submit" value="Pujar por: {{s.0}}" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="vender">
+        <form method="POST" action="/vender" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-md-5">
+                <div style="padding:10px">
+                  <span class="label label-default">Categoria Primaria</span>
+                  <select style="padding:7px" class="form-control" name="categoriaPrimaria" id="categoriaPrimaria">
+                      {% for categoria in categoriaPrimaria %}
+                        <option value="{{categoria}}">{{categoria}}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+                <div style="padding:10px">
+                  <span class="label label-default">Categoria Secundaria</span>
+                  <select style="padding:7px" class="form-control" name="categoriaSecundaria" id="categoriaSecundaria">
+                      {% for key, value in categoriaSecundaria.items %}
+                        {% for val in value %}
+                            <option value="{{val}}" name="{{key}}">{{val}}</option>
+                        {% endfor %}
+                      {% endfor %}
+                    </select>
+                </div>
+                <div style="padding:10px">
+                    <span class="label label-default">Detalles Item</span>
+                    <input type="text" class="form-control" name="descrItem">
+                </div>
+                <div style="padding:10px">
+                    <span class="label label-default">Detalles Entrega</span>
+                    <input type="text" class="form-control" name="descrEntrega">
+                </div>
+                <div style="padding:10px">
+                    <span class="label label-default">Fecha Fin</span>
+                    <input type="text" class="form-control" name="fechaFin" placeholder="mm dd yyyy">
+                </div>
+                <div style="padding:10px">
+                    <span class="label label-default">Hora Fin</span>
+                    <input type="text" class="form-control" name="horaFin" placeholder="HH:MM">
+                </div>
+                
+            </div>
+            <div class="col-md-5">
+                <div style="padding:10px">
+                    <span class="label label-default">Precio Inicial</span>
+                    <input type="text" class="form-control" name="precioI">
+                </div>
+                <div style="padding:10px">
+                    <input type='file' id="imgInp" name="imgInp" />
+                    <img id="blah" name="blah" src="#" alt="your image" />
+                </div>
+                <div style="padding:10px">
+                    <input type="submit" value="Crear Subasta" />
+                </div>
+                <div style="padding:10px">
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}> {{ message }} </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="misSubastas">
+        <table class="table table-condensed">
+            <tr>
+                <th>ID</th>
+                <th>Puja Actual</th>
+                <th>Fecha Fin</th>
+                <th>Calificacion Ofertante</th>
+                <th>Ofertante</th>
+            </tr>
+            {% for s in misSubastas %}
+                <tr>
+                    <td>{{s.0}}</td>
+                    <td>{{s.2}}</td>
+                    <td>{{s.1}}</td>
+                    <td>{{s.3}}</td>
+                    <td>{{s.4}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="misCompras">
+        <table class="table table-condensed">
+            <tr>
+                <th>ID</th>
+                <th>Puja Final</th>
+                <th>Fecha Fin</th>
+                <th>Calificacion Vendedor</th>
+                <th>Vendedor</th>
+            </tr>
+            {% for s in misCompras %}
+                <tr>
+                    <td>{{s.0}}</td>
+                    <td>{{s.2}}</td>
+                    <td>{{s.1}}</td>
+                    <td>{{s.3}}</td>
+                    <td>{{s.4}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="otrosUsuarios">
+        <h3>Usuarios</h3>
+        {% for u, value in usuarios.items %}
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="heading{{u.0}}">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{u.0}}" aria-expanded="true" aria-controls="collapse{{u.0}}">
+                      {{u.4}}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapse{{u.0}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{u.0}}">
+                  <div class="panel-body">
+                      <div class="row">
+                          <div class="col-md-3">
+                              <p>
+                                Alias: {{u.0}}<br/>
+                                Nombre: {{u.2}} {{u.3}}<br/>
+                                Direccion: {{u.5}}<br/>
+                                Correo: {{u.6}}<br/>
+                                Calificacion: {{u.7}}<br/>
+                              </p>
+                          </div>
+                          <div class="col-md-7">
+                              Creadas
+                              <table class="table table-condensed">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Comprador</th>
+                                        <th>Fecha Fin</th>
+                                        <th>Precio Inicial</th>
+                                        <th>Precio Final</th>
+                                        <th>Comentario Vendedor</th>
+                                        <th>Comentario Comprador</th>
+                                    </tr>
+                                    {% for s in value.0 %}
+                                        <tr>
+                                            <td>{{s.0}}</td>
+                                            <td>{{s.2}}</td>
+                                            <td>{{s.1}}</td>
+                                            <td>{{s.3}}</td>
+                                            <td>{{s.4}}</td>
+                                            <td>{{s.5}}</td>
+                                            <td>{{s.6}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                              Ganadas
+                              <table class="table table-condensed">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Vendedor</th>
+                                        <th>Fecha Fin</th>
+                                        <th>Precio Inicial</th>
+                                        <th>Precio Final</th>
+                                        <th>Comentario Vendedor</th>
+                                        <th>Comentario Comprador</th>
+                                    </tr>
+                                    {% for s in value.1 %}
+                                        <tr>
+                                            <td>{{s.0}}</td>
+                                            <td>{{s.2}}</td>
+                                            <td>{{s.1}}</td>
+                                            <td>{{s.3}}</td>
+                                            <td>{{s.4}}</td>
+                                            <td>{{s.5}}</td>
+                                            <td>{{s.6}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+        <h3>Subastas</h3>
+        {% for key, value in dicPujas.items %}
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{key.0}}" aria-expanded="true" aria-controls="collapse{{key.0}}">
+                      ID: {{key.0}} || Vendedor: {{key.1}} || Fecha Fin: {{key.2}}
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapse{{key.0}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{key.0}}">
+                  <div class="panel-body">
+                      <h2>Pujas</h2>
+                      <table class="table table-condensed">
+                        <tr>
+                            <th>ID</th>
+                            <th>Comprador</th>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                        </tr>
+                        {% for s in value %}
+                            <tr>
+                                <td>{{s.0}}</td>
+                                <td>{{s.2}}</td>
+                                <td>{{s.1}}</td>
+                                <td>{{s.3}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+
+    </div>
+
+{%endblock%}
+
+{%block scripts%}
+    <script>
+        $('#comprar a').click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+        $('#vender a').click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+        $('#misSubastas a').click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+        $('#misCompras a').click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+        $('#otrosUsuarios a').click(function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+
+        var $select1 = $( '#categoriaPrimaria' ),
+		$select2 = $( '#categoriaSecundaria' ),
+        $options = $select2.find( 'option' );
+    
+        $select1.on( 'change', function() {
+	        $select2.html( $options.filter( '[name="' + this.value + '"]' ) );
+        }).trigger('change');
+
+        function readURL(input) {
+            var x = document.getElementById("imgInp");
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+    </script>
+{%endblock%}

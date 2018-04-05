@@ -1,0 +1,35 @@
+{% extends "usuario/layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}</h2>
+<div class="row">
+    <div class="col-md-8">
+        <section id="loginForm">
+            <form method="POST" action="/login">
+                {% csrf_token %}
+                <h4>Use a local account to log in.</h4>
+                <hr />
+                <div style="padding:10px">
+                    <label>Alias</label>
+                    <input type="text" class="form-control" name="a" placeholder="Alias">
+                </div>
+                <div style="padding:10px">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="p" placeholder="Password">
+                </div>
+                <div style="padding:10px">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="hidden" name="next" value="/" />
+                        <input type="submit" value="Log in" class="btn btn-default" />
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <div class="col-md-4">
+        <section id="socialLoginForm"></section>
+    </div>
+</div>
+
+{% endblock %}
